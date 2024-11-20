@@ -6,6 +6,11 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
@@ -25,12 +30,16 @@ import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 import javax.swing.SpringLayout;
+import javax.swing.WindowConstants;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 
+import chav1961.installer.interfaces.InstallationService;
 import chav1961.installer.interfaces.WizardAction;
 import chav1961.purelib.basic.PureLibSettings;
 import chav1961.purelib.basic.exceptions.LocalizationException;
+import chav1961.purelib.basic.interfaces.LoggerFacade;
+import chav1961.purelib.basic.interfaces.LoggerFacadeOwner;
 import chav1961.purelib.model.FieldFormat;
 import chav1961.purelib.i18n.interfaces.Localizer;
 import chav1961.purelib.i18n.interfaces.Localizer.LocaleChangeListener;
@@ -39,7 +48,7 @@ import chav1961.purelib.i18n.interfaces.SupportedLanguages;
 import chav1961.purelib.ui.swing.SwingUtils;
 import chav1961.purelib.ui.swing.useful.JStateString;
 
-public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOwner {
+public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOwner, LoggerFacadeOwner {
 	private static final long serialVersionUID = -7868719740809674349L;
 
 	private static final String		APP_TITLE = "app.title";
@@ -70,7 +79,8 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 		final JPanel		header = new JPanel(new BorderLayout());
 		final JPanel		left = new JPanel(new BorderLayout(10, 10));
 		final JPanel		separator = new JPanel(new BorderLayout());
-		final JPanel		bottom = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		final JPanel		bottom = new JPanel(new BorderLayout());
+		final JPanel		buttons = new JPanel(new FlowLayout());
 		
 		stepCaption.setHorizontalAlignment(JLabel.CENTER);
 		header.add(stepCaption, BorderLayout.CENTER); 
@@ -87,9 +97,14 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 		left.add(new JLabel(" "), BorderLayout.SOUTH);
 		getContentPane().add(left, BorderLayout.WEST);
 		
-		bottom.add(prevButton);
-		bottom.add(nextButton);
-		bottom.add(cancelButton);
+		prevButton.addActionListener((e)->press(WizardAction.PREVIOUS));
+		buttons.add(prevButton);
+		nextButton.addActionListener((e)->press(WizardAction.NEXT));
+		buttons.add(nextButton);
+		cancelButton.addActionListener((e)->press(WizardAction.CANCEL));
+		buttons.add(cancelButton);
+		bottom.add(state, BorderLayout.CENTER);
+		bottom.add(buttons, BorderLayout.EAST);
 		
 		separator.add(new JSeparator(), BorderLayout.NORTH);
 		separator.add(bottom, BorderLayout.CENTER);
@@ -97,6 +112,14 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 		getContentPane().add(separator, BorderLayout.SOUTH);
 		setSize(1024, 768);
 		setLocationRelativeTo(null);
+
+		setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				press(WizardAction.CANCEL);
+			}
+		});
 		
 		fillLocalizedStrings();
 	}
@@ -105,6 +128,11 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 	public Localizer getLocalizer() {
 		return localizer;
 	}
+
+	@Override
+	public LoggerFacade getLogger() {
+		return state;
+	}
 	
 	@Override
 	public void localeChanged(final Locale oldLocale, final Locale newLocale) throws LocalizationException {
@@ -112,6 +140,10 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 		if (oldComponent != null) {
 			SwingUtils.refreshLocale(oldComponent, oldLocale, newLocale);
 		}
+	}
+	
+	public InstallationService selectProduct2Install(final List<InstallationService> products) {
+		return null;
 	}
 	
 	public void setContent(final JComponent content) {
@@ -145,7 +177,16 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 	}
 
 	public void cancel() {
-		
+		setVisible(false);
+		dispose();
+	}
+
+	private void press(final WizardAction action) {
+		// TODO Auto-generated method stub
+		System.err.println("Action="+action);
+		if (action == WizardAction.CANCEL) {
+			cancel();
+		}
 	}
 	
 	private JComboBox<SupportedLanguages> prepareLangBox() {
@@ -165,8 +206,8 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 		final ListModel<String>	model = new DefaultListModel<>();
 		final JList<String>		result = new JList<>(model);
 		
-		steps.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
-		steps.setPreferredSize(new Dimension(250, 250));
+		result.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+		result.setPreferredSize(new Dimension(250, 250));
 		return result;
 	}
 	

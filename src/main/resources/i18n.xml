@@ -8,6 +8,8 @@
 		<key name="app.button.next">Next &gt;&gt;</key>
 		<key name="app.button.finish">Finish</key>
 		<key name="app.button.cancel">Cancel</key>
+
+		<key name="sel.preamble">Preamble</key>
 	</lang> 
 	<lang name="ru">
 <!-- Test set and common definitions  -->
@@ -17,6 +19,8 @@
 		<key name="app.button.next">Далее &gt;&gt;</key>
 		<key name="app.button.finish">Готово</key>
 		<key name="app.button.cancel">Отмена</key>
+
+		<key name="sel.preamble">Преамбула</key>
 	</lang> 
 </localization>
 	
