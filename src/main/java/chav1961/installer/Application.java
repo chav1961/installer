@@ -65,7 +65,7 @@ public class Application {
 					
 					show.setDaemon(true);
 					show.start();
-					final InstallationService	selected = installations.size() == 1 ? installations.get(0) : w.selectProduct2Install(installations);
+					final InstallationService	selected = /*installations.size() == 1 ? installations.get(0) :*/ w.selectProduct2Install(installations);
 					
 					if (selected != null) {
 						bindings.put("CURRENT", selected);						

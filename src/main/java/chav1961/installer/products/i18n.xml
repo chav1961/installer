@@ -2,11 +2,15 @@
 <localization xmlns="http://www.i18n.purelib.chav1961.ru/">
 	<lang name="en">
 <!-- Test set and common definitions  -->
-		<key name="testSet1">test set 1</key>
+		<key name="helloworld.product.name">name</key>
+		<key name="helloworld.product.description">description</key>
+		<key name="helloworld.product.vendor">vendor</key>
 	</lang> 
 	<lang name="ru">
 <!-- Test set and common definitions  -->
-		<key name="testSet1">test set 1</key>
+		<key name="helloworld.product.name">имя</key>
+		<key name="helloworld.product.description">описание</key>
+		<key name="helloworld.product.vendor">производитель</key>
 	</lang> 
 </localization>
 	

@@ -1,9 +1,11 @@
 package chav1961.installer.internal;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.util.List;
 import java.util.Locale;
 
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -58,9 +60,27 @@ public class ProductSelector extends JPanel implements LocaleChangeListener, Loc
 		fillLocalizedStrings();
 	}
 
+	public InstallationService getServiceSelected() {
+		return toSelect.getSelectedValue();
+	}
+	
 	private JList<InstallationService> prepareProductList(final List<InstallationService> products) {
 		final JList<InstallationService>		result = new JList<>(products.toArray(new InstallationService[products.size()]));
 		
+		result.setCellRenderer(new DefaultListCellRenderer() {
+			private static final long serialVersionUID = 8780607307703911934L;
+
+			@Override
+			public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+				final InstallationService	service = (InstallationService)value;
+				final JLabel	label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+				label.setIcon(service.getProductIcon());
+				label.setText(service.getLocalizer().getValue(service.getProductName()));
+				label.setToolTipText(service.getLocalizer().getValue(service.getProductDescription()));
+				return label;
+			}
+		});
 		return result;
 	}
 	

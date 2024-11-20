@@ -36,6 +36,7 @@ import javax.swing.border.LineBorder;
 
 import chav1961.installer.interfaces.InstallationService;
 import chav1961.installer.interfaces.WizardAction;
+import chav1961.installer.internal.ProductSelector;
 import chav1961.purelib.basic.PureLibSettings;
 import chav1961.purelib.basic.exceptions.LocalizationException;
 import chav1961.purelib.basic.interfaces.LoggerFacade;
@@ -143,7 +144,14 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 	}
 	
 	public InstallationService selectProduct2Install(final List<InstallationService> products) {
-		return null;
+		final ProductSelector	ps = new ProductSelector(getLocalizer(), products);
+		
+		if (pushContent("",getLocalizer(),"sel",ps,false) == WizardAction.NEXT) {
+			return ps.getServiceSelected();
+		}
+		else {
+			return null;
+		}
 	}
 	
 	public void setContent(final JComponent content) {
@@ -160,16 +168,21 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 		}
 	}
 	
-	public WizardAction pushContent(final String stepId, final String localizer, final String stepName, final JComponent component, final boolean isTerminalNode) {
+	public WizardAction pushContent(final String stepId, final Localizer localizer, final String stepName, final JComponent component, final boolean isTerminalNode) {
+		setContent(component);
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return null;
 	}
 	
-	public WizardAction popContent() {
-		return null;
+	public void popContent() {
 	}
 
-	public WizardAction popContent(final String stepId) {
-		return null;
+	public void popContent(final String stepId) {
 	}
 	
 	public void complete() {
