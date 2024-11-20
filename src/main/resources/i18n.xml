@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<localization xmlns="http://www.i18n.purelib.chav1961.ru/">
+	<lang name="en">
+<!-- Test set and common definitions  -->
+		<key name="app.title">(c) title</key>
+		<key name="app.steps.title">Steps :</key>
+		<key name="app.button.prev">&lt;&lt; Previous</key>
+		<key name="app.button.next">Next &gt;&gt;</key>
+		<key name="app.button.finish">Finish</key>
+		<key name="app.button.cancel">Cancel</key>
+	</lang> 
+	<lang name="ru">
+<!-- Test set and common definitions  -->
+		<key name="app.title">(c) заголовок</key>
+		<key name="app.steps.title">Шаги :</key>
+		<key name="app.button.prev">&lt;&lt; Назад</key>
+		<key name="app.button.next">Далее &gt;&gt;</key>
+		<key name="app.button.finish">Готово</key>
+		<key name="app.button.cancel">Отмена</key>
+	</lang> 
+</localization>
+	

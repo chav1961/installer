@@ -1,5 +1,6 @@
 package chav1961.installer;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -15,16 +16,19 @@ import chav1961.purelib.basic.ArgParser;
 import chav1961.purelib.basic.PureLibSettings;
 import chav1961.purelib.basic.PureLibSettings.CurrentOS;
 import chav1961.purelib.basic.exceptions.CommandLineParametersException;
+import chav1961.purelib.i18n.interfaces.Localizer;
 import chav1961.purelib.ui.swing.useful.JSimpleSplash;
 
 // https://nsis.sourceforge.io/Simple_tutorials
 public class Application {
 	private static final String	ARG_DEBUG = "d";
+	private static final URI	LOCALIZER_URI = URI.create(Localizer.LOCALIZER_SCHEME+":xml:root://"+Application.class.getName()+"/i18n.xml");
 
 	public static void main(final String[] args) {
 		final ArgParser	parser = new ApplicationArgParser();
 		
-		try(final JSimpleSplash			jss = new JSimpleSplash()) {
+		try(final JSimpleSplash	jss = new JSimpleSplash();
+			final Localizer		localizer = Localizer.Factory.newInstance(LOCALIZER_URI)) {
 			jss.start("Prepare installer", 3);
 			
 			final ArgParser				parsed = parser.parse(args);
@@ -52,7 +56,9 @@ public class Application {
 					}
 				}
 				if (!installations.isEmpty()) {
-					final Wizard	w = new Wizard();
+					PureLibSettings.PURELIB_LOCALIZER.push(localizer);
+					
+					final Wizard	w = new Wizard(localizer);
 					
 					w.setVisible(true);
 					w.dispose();
