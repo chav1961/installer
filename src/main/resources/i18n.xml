@@ -9,7 +9,19 @@
 		<key name="app.button.finish">Finish</key>
 		<key name="app.button.cancel">Cancel</key>
 
+		<key name="sel.title">Title</key>
 		<key name="sel.preamble">Preamble</key>
+
+		<key name="std.confirm.exit.title">Title</key>
+		<key name="std.confirm.exit.message">Message</key>
+		<key name="std.confirm.exit.keep.settings">Keep</key>
+		
+		<key name="step.completion.type.waiting">waiting</key>
+		<key name="step.completion.type.processing">processing</key>
+		<key name="step.completion.type.successful">successful</key>
+		<key name="step.completion.type.failed">failed</key>
+		<key name="step.completion.type.skipped">skipped</key>
+		<key name="step.completion.type.not.required">not required</key>
 	</lang> 
 	<lang name="ru">
 <!-- Test set and common definitions  -->
@@ -20,7 +32,19 @@
 		<key name="app.button.finish">Готово</key>
 		<key name="app.button.cancel">Отмена</key>
 
+		<key name="sel.title">Заголовок</key>
 		<key name="sel.preamble">Преамбула</key>
+		
+		<key name="std.confirm.exit.title">Заголовок</key>
+		<key name="std.confirm.exit.message">Сообщение</key>
+		<key name="std.confirm.exit.keep.settings">Сохряняццо</key>
+		
+		<key name="step.completion.type.waiting">ожидание</key>
+		<key name="step.completion.type.processing">обработка</key>
+		<key name="step.completion.type.successful">успешно</key>
+		<key name="step.completion.type.failed">аварийно</key>
+		<key name="step.completion.type.skipped">пропущено</key>
+		<key name="step.completion.type.not.required">не требуется</key>
 	</lang> 
 </localization>
 	

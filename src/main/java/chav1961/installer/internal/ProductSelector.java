@@ -20,6 +20,8 @@ import chav1961.purelib.i18n.interfaces.LocalizerOwner;
 public class ProductSelector extends JPanel implements LocaleChangeListener, LocalizerOwner {
 	private static final long serialVersionUID = -8602909912476623182L;
 	
+	public static final String		SEL_TITLE = "sel.title";
+	
 	private static final String		SEL_PREAMBLE = "sel.preamble";
 	private static final String		SEL_SELECT = "sel.select";
 

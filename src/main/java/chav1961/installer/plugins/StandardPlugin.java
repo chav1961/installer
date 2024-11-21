@@ -56,7 +56,7 @@ public class StandardPlugin implements InstallationPlugin {
 			throw new NullPointerException("Os can't be null");
 		}
 		else {
-			return new StandardUtilities();
+			return StandardUtilities.getInstance();
 		}
 	}
 }

@@ -4,5 +4,6 @@ public enum WizardAction {
 	PREVIOUS,
 	NEXT,
 	COMPLETE,
-	CANCEL;
+	CANCEL,
+	CANCEL_WITH_KEEP_SETTINGS;
 }

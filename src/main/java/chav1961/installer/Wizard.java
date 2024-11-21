@@ -13,9 +13,15 @@ import java.awt.event.WindowListener;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Exchanger;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.function.Predicate;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -34,10 +40,13 @@ import javax.swing.WindowConstants;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
 
+import chav1961.installer.interfaces.ExitOptions;
 import chav1961.installer.interfaces.InstallationService;
 import chav1961.installer.interfaces.WizardAction;
 import chav1961.installer.internal.ProductSelector;
+import chav1961.installer.plugins.StandardUtilities;
 import chav1961.purelib.basic.PureLibSettings;
+import chav1961.purelib.basic.Utils;
 import chav1961.purelib.basic.exceptions.LocalizationException;
 import chav1961.purelib.basic.interfaces.LoggerFacade;
 import chav1961.purelib.basic.interfaces.LoggerFacadeOwner;
@@ -67,11 +76,12 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 	private final JLabel			stepsTitle = new JLabel((Icon)null, JLabel.CENTER);
 	private final JStateString		state;
 	private final JComboBox<SupportedLanguages>	lang = prepareLangBox();
-	private final JList<String>		steps = prepareStepsList();
+	private final JList<HistoryStack>		steps = prepareStepsList();
+	private final Exchanger<WizardAction>	ex = new Exchanger<>();
 	private Component				oldComponent = null;
 	
 	public Wizard(final Localizer localizer) {
-		super(null, ModalityType.APPLICATION_MODAL);
+		super(null, ModalityType.MODELESS);
 		this.localizer = localizer;		
 		this.state = new JStateString(localizer);
 
@@ -146,7 +156,7 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 	public InstallationService selectProduct2Install(final List<InstallationService> products) {
 		final ProductSelector	ps = new ProductSelector(getLocalizer(), products);
 		
-		if (pushContent("",getLocalizer(),"sel",ps,false) == WizardAction.NEXT) {
+		if (pushContent("",getLocalizer(),"sel",ps,false,(c)->true) == WizardAction.NEXT) {
 			return ps.getServiceSelected();
 		}
 		else {
@@ -168,21 +178,92 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 		}
 	}
 	
-	public WizardAction pushContent(final String stepId, final Localizer localizer, final String stepName, final JComponent component, final boolean isTerminalNode) {
-		setContent(component);
-		try {
-			Thread.sleep(10000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	public WizardAction pushContent(final String stepId, final Localizer localizer, final String stepName, final JComponent component, final boolean isTerminalNode, final Predicate<JComponent> validator) {
+		if (Utils.checkEmptyOrNullString(stepId)) {
+			throw new IllegalArgumentException("Step ID can't be null or empty");
 		}
-		return null;
+		else if (localizer == null) {
+			throw new NullPointerException("Localizer can't be null");
+		}
+		else if (Utils.checkEmptyOrNullString(stepName)) {
+			throw new IllegalArgumentException("Step name can't be null or empty");
+		}
+		else if (component == null) {
+			throw new NullPointerException("Component can't be null");
+		}
+		else {
+			final HistoryStack	item = new HistoryStack(stepId, localizer, stepName, component, isTerminalNode);
+			
+			((DefaultListModel<HistoryStack>)steps.getModel()).addElement(item);
+			setContent(component);
+			prevButton.setEnabled(steps.getModel().getSize() > 1);
+			nextButton.setText(getLocalizer().getValue(isTerminalNode ? APP_BUTTON_FINISH : APP_BUTTON_NEXT));
+			
+			try {
+				WizardAction	action;
+				
+				for(;;) {
+					switch (action = ex.exchange(null)) {
+						case CANCEL		:
+							final ExitOptions	options;
+							
+							switch (options = StandardUtilities.getInstance().confirmExit()) {
+								case CANCEL			:
+									break;
+								case EXIT			:
+									return WizardAction.CANCEL;
+								case EXIT_AND_SAVE	:
+									return WizardAction.CANCEL_WITH_KEEP_SETTINGS;
+								default :
+									throw new UnsupportedOperationException("ExitAction type ["+options+"] is not supported yet");
+							}
+							break;
+						case NEXT		:
+							if (validator.test(component)) {
+								return isTerminalNode ? WizardAction.COMPLETE : WizardAction.NEXT;
+							}
+							break;
+						case PREVIOUS	:
+							popContent();
+							return WizardAction.PREVIOUS;
+						default :
+							throw new UnsupportedOperationException("WizardAction type ["+action+"] is not supported yet");
+					}
+				}
+			} catch (InterruptedException e) {
+				return WizardAction.CANCEL;
+			}
+		}
 	}
 	
 	public void popContent() {
+		final HistoryStack obj = ((DefaultListModel<HistoryStack>)steps.getModel()).remove(steps.getModel().getSize()-1);
+		
+		setContent(obj.component);
 	}
 
 	public void popContent(final String stepId) {
+		if (Utils.checkEmptyOrNullString(stepId)) {
+			throw new IllegalArgumentException("Step ID can't be null or empty");
+		}
+		else {
+			int	found = -1;
+			
+			for(int index = steps.getModel().getSize()-1; index >= 0; index--) {
+				if (steps.getModel().getElementAt(index).stepId.equals(stepId)) {
+					found = index;
+					break;
+				}
+			}
+			if (found == -1) {
+				throw new IllegalArgumentException("Step ID ["+stepId+"] is missing in the history stack");
+			}
+			else {
+				while (steps.getModel().getSize() > found) {
+					popContent();
+				}
+			}
+		}
 	}
 	
 	public void complete() {
@@ -195,10 +276,9 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 	}
 
 	private void press(final WizardAction action) {
-		// TODO Auto-generated method stub
-		System.err.println("Action="+action);
-		if (action == WizardAction.CANCEL) {
-			cancel();
+		try {
+			ex.exchange(action, 100, TimeUnit.MILLISECONDS);
+		} catch (InterruptedException | TimeoutException e) {
 		}
 	}
 	
@@ -215,20 +295,49 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 		return result;
 	}
 
-	private JList<String> prepareStepsList() {
-		final ListModel<String>	model = new DefaultListModel<>();
-		final JList<String>		result = new JList<>(model);
+	private JList<HistoryStack> prepareStepsList() {
+		final ListModel<HistoryStack>	model = new DefaultListModel<>();
+		final JList<HistoryStack>		result = new JList<>(model);
 		
+		result.setCellRenderer(new DefaultListCellRenderer() {
+			private static final long serialVersionUID = -7533988324827608667L;
+			@Override
+			public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+				final JLabel		label = (JLabel)super.getListCellRendererComponent(list, value, index, false, false);
+				final HistoryStack	item = (HistoryStack)value;
+				
+				label.setText(item.localizer.getValue(item.stepName));
+				return label;
+			}
+		});
 		result.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 		result.setPreferredSize(new Dimension(250, 250));
 		return result;
 	}
 	
 	private void fillLocalizedStrings() {
+		final DefaultListModel<HistoryStack>	model = (DefaultListModel<HistoryStack>)steps.getModel();
+		
 		setTitle(getLocalizer().getValue(APP_TITLE));
 		prevButton.setText(getLocalizer().getValue(APP_BUTTON_PREV));
-		nextButton.setText(getLocalizer().getValue(APP_BUTTON_NEXT));
+		nextButton.setText(getLocalizer().getValue(model.getSize() > 0 && model.getElementAt(model.getSize()-1).terminal ? APP_BUTTON_FINISH : APP_BUTTON_NEXT));
 		cancelButton.setText(getLocalizer().getValue(APP_BUTTON_CANCEL));
 		stepsTitle.setText(getLocalizer().getValue(APP_STEPS_TITLE));
+	}
+
+	private static class HistoryStack {
+		private final String		stepId;
+		private final Localizer		localizer;
+		private final String		stepName;
+		private final JComponent	component;
+		private final boolean		terminal;
+		
+		private HistoryStack(final String stepId, final Localizer localizer, final String stepName, final JComponent component, final boolean terminal) {
+			this.stepId = stepId;
+			this.localizer = localizer;
+			this.stepName = stepName;
+			this.component = component;
+			this.terminal = terminal;
+		}
 	}
 }
