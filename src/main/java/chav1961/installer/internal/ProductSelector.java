@@ -13,9 +13,11 @@ import javax.swing.JScrollPane;
 
 import chav1961.installer.interfaces.InstallationService;
 import chav1961.purelib.basic.exceptions.LocalizationException;
+import chav1961.purelib.basic.interfaces.LoggerFacade.Severity;
 import chav1961.purelib.i18n.interfaces.Localizer;
 import chav1961.purelib.i18n.interfaces.Localizer.LocaleChangeListener;
 import chav1961.purelib.i18n.interfaces.LocalizerOwner;
+import chav1961.purelib.ui.swing.SwingUtils;
 
 public class ProductSelector extends JPanel implements LocaleChangeListener, LocalizerOwner {
 	private static final long serialVersionUID = -8602909912476623182L;
@@ -24,6 +26,7 @@ public class ProductSelector extends JPanel implements LocaleChangeListener, Loc
 	
 	private static final String		SEL_PREAMBLE = "sel.preamble";
 	private static final String		SEL_SELECT = "sel.select";
+	private static final String		SEL_NO_SELECTION = "sel.no.selection";
 
 	private final Localizer			localizer;
 	private final JList<InstallationService>	toSelect;
@@ -64,6 +67,16 @@ public class ProductSelector extends JPanel implements LocaleChangeListener, Loc
 
 	public InstallationService getServiceSelected() {
 		return toSelect.getSelectedValue();
+	}
+	
+	public boolean validateContent() {
+		if (getServiceSelected() != null) {
+			return true;
+		}
+		else {
+			SwingUtils.getNearestLogger(this).message(Severity.warning, getLocalizer().getValue(SEL_NO_SELECTION));
+			return false;
+		}
 	}
 	
 	private JList<InstallationService> prepareProductList(final List<InstallationService> products) {

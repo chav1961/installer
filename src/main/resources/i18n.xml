@@ -11,6 +11,8 @@
 
 		<key name="sel.title">Title</key>
 		<key name="sel.preamble">Preamble</key>
+		<key name="sel.select">Select</key>
+		<key name="sel.no.selection">No selection</key>
 
 		<key name="std.confirm.exit.title">Title</key>
 		<key name="std.confirm.exit.message">Message</key>
@@ -34,6 +36,8 @@
 
 		<key name="sel.title">Заголовок</key>
 		<key name="sel.preamble">Преамбула</key>
+		<key name="sel.select">Выбрать</key>
+		<key name="sel.no.selection">Не выбрано</key>
 		
 		<key name="std.confirm.exit.title">Заголовок</key>
 		<key name="std.confirm.exit.message">Сообщение</key>

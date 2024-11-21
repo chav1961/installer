@@ -70,7 +70,7 @@ public class Application {
 					INSTALLATION_CONTEXT.put(CTX_WIZARD, w);
 					try {
 						w.setVisible(true);
-						switch (w.pushContent("_sp_", localizer, ProductSelector.SEL_TITLE, ps, false, (c)->true)) {
+						switch (w.pushContent("_sp_", localizer, ProductSelector.SEL_TITLE, ps, false, (c)->ps.validateContent())) {
 							case CANCEL : case COMPLETE : case PREVIOUS : case CANCEL_WITH_KEEP_SETTINGS :
 								break;
 							case NEXT	:
