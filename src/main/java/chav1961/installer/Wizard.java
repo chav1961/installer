@@ -6,10 +6,12 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -36,6 +38,7 @@ import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 import javax.swing.SpringLayout;
+import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
@@ -68,32 +71,38 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 	private static final String		APP_BUTTON_FINISH = "app.button.finish";
 	private static final String		APP_BUTTON_CANCEL = "app.button.cancel";
 	
-	private final Localizer			localizer;
 	private final JButton			prevButton = new JButton();
 	private final JButton			nextButton = new JButton();
 	private final JButton			cancelButton = new JButton();
-	private final JLabel			stepCaption = new JLabel("?????");
+	private final JLabel			stepCaption = new JLabel();
 	private final JLabel			stepsTitle = new JLabel((Icon)null, JLabel.CENTER);
+	private final JLabel			avatar = new JLabel();
 	private final JStateString		state;
 	private final JComboBox<SupportedLanguages>	lang = prepareLangBox();
 	private final JList<HistoryStack>		steps = prepareStepsList();
 	private final Exchanger<WizardAction>	ex = new Exchanger<>();
+	private List<Localizer>			localizer = new ArrayList<>();
+	private String					caption = "*****";
 	private Component				oldComponent = null;
 	
 	public Wizard(final Localizer localizer) {
 		super(null, ModalityType.MODELESS);
-		this.localizer = localizer;		
+		this.localizer.add(localizer);		
 		this.state = new JStateString(localizer);
 
+		getContentPane().setLayout(new BorderLayout(10, 10));
+		
 		localizer.addLocaleChangeListener(this);
 		
-		final JPanel		header = new JPanel(new BorderLayout());
-		final JPanel		left = new JPanel(new BorderLayout(10, 10));
-		final JPanel		separator = new JPanel(new BorderLayout());
-		final JPanel		bottom = new JPanel(new BorderLayout());
-		final JPanel		buttons = new JPanel(new FlowLayout());
+		final JPanel	header = new JPanel(new BorderLayout());
+		final JPanel	left = new JPanel(new BorderLayout(10, 10));
+		final JPanel	separator = new JPanel(new BorderLayout());
+		final JPanel	bottom = new JPanel(new BorderLayout());
+		final JPanel	buttons = new JPanel(new FlowLayout());
+		final Font		f = (Font)UIManager.get("Label.font");
 		
 		stepCaption.setHorizontalAlignment(JLabel.CENTER);
+		stepCaption.setFont(f.deriveFont(Font.BOLD, 1.5f * f.getSize()));
 		header.add(stepCaption, BorderLayout.CENTER); 
 		header.add(lang, BorderLayout.EAST); 
 
@@ -101,11 +110,12 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 		
 		steps.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
 		steps.setPreferredSize(new Dimension(250, 250));
+		avatar.setHorizontalAlignment(JLabel.CENTER);
 		left.add(stepsTitle, BorderLayout.NORTH);
 		left.add(steps, BorderLayout.CENTER);
 		left.add(new JLabel(" "), BorderLayout.WEST);
 		left.add(new JLabel(" "), BorderLayout.EAST);
-		left.add(new JLabel(" "), BorderLayout.SOUTH);
+		left.add(avatar, BorderLayout.SOUTH);
 		getContentPane().add(left, BorderLayout.WEST);
 		
 		prevButton.addActionListener((e)->press(WizardAction.PREVIOUS));
@@ -137,7 +147,7 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 
 	@Override
 	public Localizer getLocalizer() {
-		return localizer;
+		return localizer.get(0);
 	}
 
 	@Override
@@ -153,15 +163,8 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 		}
 	}
 	
-	public InstallationService selectProduct2Install(final List<InstallationService> products) {
-		final ProductSelector	ps = new ProductSelector(getLocalizer(), products);
-		
-		if (pushContent("",getLocalizer(),"sel",ps,false,(c)->true) == WizardAction.NEXT) {
-			return ps.getServiceSelected();
-		}
-		else {
-			return null;
-		}
+	public void setAvatar(final Icon avatar) {
+		this.avatar.setIcon(avatar);
 	}
 	
 	public void setContent(final JComponent content) {
@@ -173,12 +176,12 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 				remove(oldComponent);
 			}
 			add(content, BorderLayout.CENTER);
-			SwingUtils.refreshLocale(content, localizer.currentLocale().getLocale(), localizer.currentLocale().getLocale());
+			SwingUtils.refreshLocale(content, getLocalizer().currentLocale().getLocale(), getLocalizer().currentLocale().getLocale());
 			oldComponent = content;
 		}
 	}
 	
-	public WizardAction pushContent(final String stepId, final Localizer localizer, final String stepName, final JComponent component, final boolean isTerminalNode, final Predicate<JComponent> validator) {
+	public WizardAction pushContent(final String stepId, final Localizer localizer, final String stepName, final String stepTitle, final JComponent component, final boolean isTerminalNode, final Predicate<JComponent> validator) {
 		if (Utils.checkEmptyOrNullString(stepId)) {
 			throw new IllegalArgumentException("Step ID can't be null or empty");
 		}
@@ -195,7 +198,9 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 			final HistoryStack	item = new HistoryStack(stepId, localizer, stepName, component, isTerminalNode);
 			
 			((DefaultListModel<HistoryStack>)steps.getModel()).addElement(item);
+			this.localizer.add(0, localizer);
 			setContent(component);
+			setStepCaption(stepTitle);
 			prevButton.setEnabled(steps.getModel().getSize() > 1);
 			nextButton.setText(getLocalizer().getValue(isTerminalNode ? APP_BUTTON_FINISH : APP_BUTTON_NEXT));
 			
@@ -240,6 +245,7 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 		final HistoryStack obj = ((DefaultListModel<HistoryStack>)steps.getModel()).remove(steps.getModel().getSize()-1);
 		
 		setContent(obj.component);
+		this.localizer.remove(0);
 	}
 
 	public void popContent(final String stepId) {
@@ -275,6 +281,15 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 		dispose();
 	}
 
+	private void setStepCaption(final String caption) {
+		this.caption = caption;
+		try{
+			this.stepCaption.setText(getLocalizer().getValue(this.caption));
+		} catch (LocalizationException exc) {
+			this.stepCaption.setText(caption);
+		}
+	}
+	
 	private void press(final WizardAction action) {
 		try {
 			ex.exchange(action, 100, TimeUnit.MILLISECONDS);
@@ -323,6 +338,7 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 		nextButton.setText(getLocalizer().getValue(model.getSize() > 0 && model.getElementAt(model.getSize()-1).terminal ? APP_BUTTON_FINISH : APP_BUTTON_NEXT));
 		cancelButton.setText(getLocalizer().getValue(APP_BUTTON_CANCEL));
 		stepsTitle.setText(getLocalizer().getValue(APP_STEPS_TITLE));
+		setStepCaption( caption);
 	}
 
 	private static class HistoryStack {

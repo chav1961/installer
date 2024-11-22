@@ -1,5 +1,6 @@
 package chav1961.installer;
 
+import java.awt.Font;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,7 +26,7 @@ import chav1961.purelib.ui.swing.useful.JSimpleSplash;
 public class Application {
 	public static final Map<String, Object>	INSTALLATION_CONTEXT = new HashMap<>();
 	public static final String	CTX_SERVICE = "__service__";
-	public static final String	CTX_WIZARD = "__wizadr__";
+	public static final String	CTX_WIZARD = "__wizard__";
 	
 	private static final String	ARG_DEBUG = "d";
 	private static final URI	LOCALIZER_URI = URI.create(Localizer.LOCALIZER_SCHEME+":xml:root://"+Application.class.getName()+"/i18n.xml");
@@ -69,18 +70,22 @@ public class Application {
 					bindings.put("WIZARD", w);
 					INSTALLATION_CONTEXT.put(CTX_WIZARD, w);
 					try {
+						w.setAvatar(ps.getAvatar());
 						w.setVisible(true);
-						switch (w.pushContent("_sp_", localizer, ProductSelector.SEL_TITLE, ps, false, (c)->ps.validateContent())) {
+						
+						switch (w.pushContent("_sp_", localizer, ProductSelector.SEL_STEP, ProductSelector.SEL_TITLE, ps, false, (c)->ps.validateContent())) {
 							case CANCEL : case COMPLETE : case PREVIOUS : case CANCEL_WITH_KEEP_SETTINGS :
 								break;
 							case NEXT	:
 								final InstallationService	service = ps.getServiceSelected();
+								final String	script = service.getInstallationScript(PureLibSettings.CURRENT_OS); 
 
 								bindings.put("SERVICE", service);
 								INSTALLATION_CONTEXT.put(CTX_SERVICE, service);
 								
 								localizer.push(service.getLocalizer());
-								engine.eval(service.getInstallationScript(PureLibSettings.CURRENT_OS));
+								w.setAvatar(service.getAvatar());
+								engine.eval(script);
 								break;
 							default:
 								throw new UnsupportedOperationException("Wizard action is not supported yet");

@@ -16,6 +16,7 @@ public interface InstallationService {
 	String getProductVendor();
 	URI getProductSite();
 	Icon getProductIcon();
+	Icon getAvatar();
 	boolean isCurrentOsSupported(CurrentOS os);
 	String getInstallationScript(CurrentOS os);
 }

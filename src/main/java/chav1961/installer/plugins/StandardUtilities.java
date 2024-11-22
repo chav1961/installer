@@ -3,6 +3,7 @@ package chav1961.installer.plugins;
 import java.awt.BorderLayout;
 
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -10,6 +11,7 @@ import javax.swing.JPanel;
 import chav1961.installer.Application;
 import chav1961.installer.Wizard;
 import chav1961.installer.interfaces.ExitOptions;
+import chav1961.installer.interfaces.InstallationService;
 import chav1961.purelib.ui.swing.useful.JLocalizedOptionPane;
 
 public class StandardUtilities {
@@ -33,6 +35,16 @@ public class StandardUtilities {
 		else {
 			return ExitOptions.CANCEL; 
 		}
+	}
+	
+	public JComponent getLastScreen() {
+		final InstallationService	service = (InstallationService)Application.INSTALLATION_CONTEXT.get(Application.CTX_SERVICE);
+		final JPanel	panel = new JPanel(new BorderLayout(10, 10));
+		final JLabel	preamble = new JLabel();
+		
+		preamble.setText("assa");
+		panel.add(preamble, BorderLayout.NORTH);
+		return panel;
 	}
 
 	public static StandardUtilities getInstance() {

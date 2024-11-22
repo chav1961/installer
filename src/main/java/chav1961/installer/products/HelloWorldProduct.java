@@ -1,18 +1,25 @@
 package chav1961.installer.products;
 
+import java.io.IOException;
 import java.net.URI;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import chav1961.installer.Application;
+import chav1961.installer.Wizard;
 import chav1961.installer.interfaces.InstallationService;
 import chav1961.purelib.basic.DottedVersion;
 import chav1961.purelib.basic.PureLibSettings.CurrentOS;
+import chav1961.purelib.basic.Utils;
+import chav1961.purelib.basic.interfaces.LoggerFacade.Severity;
 import chav1961.purelib.i18n.XMLLocalizer;
 import chav1961.purelib.i18n.interfaces.Localizer;
+import chav1961.purelib.ui.swing.SwingUtils;
 
 public class HelloWorldProduct implements InstallationService {
 	private static final Icon			SERVICE_ICON = new ImageIcon(HelloWorldProduct.class.getResource("hello-world.png"));
+	private static final Icon			SERVICE_AVATAR = new ImageIcon(HelloWorldProduct.class.getResource("hello-avatar.png"));
 	private static final URI			SERVICE_SITE = URI.create("https://github.com/chav1961");
 	private static final String			SERVICE_PRODUCT_NAME = "helloworld.product.name";
 	private static final String			SERVICE_PRODUCT_DESCRIPTION = "helloworld.product.description";
@@ -59,6 +66,11 @@ public class HelloWorldProduct implements InstallationService {
 	public Icon getProductIcon() {
 		return SERVICE_ICON;
 	}
+
+	@Override
+	public Icon getAvatar() {
+		return SERVICE_AVATAR;
+	}
 	
 	@Override
 	public boolean isCurrentOsSupported(final CurrentOS os) {
@@ -101,11 +113,16 @@ public class HelloWorldProduct implements InstallationService {
 				case UNKNOWN	:
 					return "";
 				case WINDOWS	:
-					return "";
+					try {
+						
+						return Utils.fromResource(this.getClass().getResource("install.js"));
+					} catch (IOException e) {
+						((Wizard)Application.INSTALLATION_CONTEXT.get(Application.CTX_WIZARD)).getLogger().message(Severity.error, e, "I/O error");
+						return "";
+					}
 				default:
 					throw new UnsupportedOperationException("OS type ["+os+"] is not supported yet");
 			}
 		}
 	}
-
 }

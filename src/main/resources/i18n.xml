@@ -2,21 +2,21 @@
 <localization xmlns="http://www.i18n.purelib.chav1961.ru/">
 	<lang name="en">
 <!-- Test set and common definitions  -->
-		<key name="app.title">(c) title</key>
+		<key name="app.title">(c) installer</key>
 		<key name="app.steps.title">Steps :</key>
 		<key name="app.button.prev">&lt;&lt; Previous</key>
 		<key name="app.button.next">Next &gt;&gt;</key>
 		<key name="app.button.finish">Finish</key>
 		<key name="app.button.cancel">Cancel</key>
 
-		<key name="sel.title">Title</key>
-		<key name="sel.preamble">Preamble</key>
-		<key name="sel.select">Select</key>
-		<key name="sel.no.selection">No selection</key>
+		<key name="sel.step">Select program</key>
+		<key name="sel.title">Select program to install</key>
+		<key name="sel.preamble">uri(preamble.cre)</key>
+		<key name="sel.no.selection">No program to install is selected</key>
 
-		<key name="std.confirm.exit.title">Title</key>
-		<key name="std.confirm.exit.message">Message</key>
-		<key name="std.confirm.exit.keep.settings">Keep</key>
+		<key name="std.confirm.exit.title">Exit installer is required</key>
+		<key name="std.confirm.exit.message">Exit installer is required. Confirm your choise!</key>
+		<key name="std.confirm.exit.keep.settings">Keep all context typed (except passwords) for next installation</key>
 		
 		<key name="step.completion.type.waiting">waiting</key>
 		<key name="step.completion.type.processing">processing</key>
@@ -27,21 +27,21 @@
 	</lang> 
 	<lang name="ru">
 <!-- Test set and common definitions  -->
-		<key name="app.title">(c) заголовок</key>
+		<key name="app.title">(c) установщик</key>
 		<key name="app.steps.title">Шаги :</key>
 		<key name="app.button.prev">&lt;&lt; Назад</key>
 		<key name="app.button.next">Далее &gt;&gt;</key>
 		<key name="app.button.finish">Готово</key>
 		<key name="app.button.cancel">Отмена</key>
 
-		<key name="sel.title">Заголовок</key>
-		<key name="sel.preamble">Преамбула</key>
-		<key name="sel.select">Выбрать</key>
-		<key name="sel.no.selection">Не выбрано</key>
+		<key name="sel.step">Выбор программы</key>
+		<key name="sel.title">Выбрать программу для установки</key>
+		<key name="sel.preamble">uri(preamble.cre)</key>
+		<key name="sel.no.selection">Не выбрана программа для установки</key>
 		
-		<key name="std.confirm.exit.title">Заголовок</key>
-		<key name="std.confirm.exit.message">Сообщение</key>
-		<key name="std.confirm.exit.keep.settings">Сохряняццо</key>
+		<key name="std.confirm.exit.title">Затребован выход из установщика</key>
+		<key name="std.confirm.exit.message">Затребован выход из установщика. Подтвердите свой выбор!</key>
+		<key name="std.confirm.exit.keep.settings">Сохранить все введенные поля (кроме паролей) для последующей установки</key>
 		
 		<key name="step.completion.type.waiting">ожидание</key>
 		<key name="step.completion.type.processing">обработка</key>
