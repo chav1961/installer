@@ -3,7 +3,7 @@ WIZARD.pushContent(
 	SERVICE.getLocalizer(), 
 	SERVICE.getProductName(), 
 	"helloworld.install.complete", 
-	STD.getLastScreen(), 
+	STD.getLastScreen({showReadme:true}), 
 	true, 
 	function(c){return true;}
 );

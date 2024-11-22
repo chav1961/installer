@@ -3,8 +3,6 @@ package chav1961.installer.internal;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -122,13 +120,7 @@ public class ProductSelector extends JPanel implements LocaleChangeListener, Loc
 	}
 	
 	private void fillLocalizedStrings() {
-		try {
-			final String	html = Utils.fromResource(getLocalizer().getContent(SEL_PREAMBLE, MimeType.MIME_CREOLE_TEXT, MimeType.MIME_HTML_TEXT)); 
-			
-			description.setText(html.substring(html.indexOf("<html>")));
-		} catch (LocalizationException | IOException e) {
-			description.setText(SEL_PREAMBLE);
-		}
+		description.setText(InternalUtils.loadHtml(getLocalizer(), SEL_PREAMBLE));
 		toSelect.setModel(toSelect.getModel());
 	}
 }

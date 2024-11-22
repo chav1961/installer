@@ -17,6 +17,11 @@
 		<key name="std.confirm.exit.title">Exit installer is required</key>
 		<key name="std.confirm.exit.message">Exit installer is required. Confirm your choise!</key>
 		<key name="std.confirm.exit.keep.settings">Keep all context typed (except passwords) for next installation</key>
+
+		<key name="std.last.screen.preamble">uri(lastscreen.cre)</key>
+		<key name="std.last.screen.field.need.reboot">Reboot system now</key>
+		<key name="std.last.screen.field.run.application">Run applcation</key>
+		<key name="std.last.screen.field.show.readme">Show README</key>
 		
 		<key name="step.completion.type.waiting">waiting</key>
 		<key name="step.completion.type.processing">processing</key>
@@ -42,6 +47,12 @@
 		<key name="std.confirm.exit.title">Затребован выход из установщика</key>
 		<key name="std.confirm.exit.message">Затребован выход из установщика. Подтвердите свой выбор!</key>
 		<key name="std.confirm.exit.keep.settings">Сохранить все введенные поля (кроме паролей) для последующей установки</key>
+		
+		<key name="std.last.screen.preamble">uri(lastscreen.cre)</key>
+		<key name="std.last.screen.field.need.reboot">Перезагрузить систему</key>
+		<key name="std.last.screen.field.run.application">Запустить приложение</key>
+		<key name="std.last.screen.field.show.readme">Просмотр файла README</key>
+		
 		
 		<key name="step.completion.type.waiting">ожидание</key>
 		<key name="step.completion.type.processing">обработка</key>

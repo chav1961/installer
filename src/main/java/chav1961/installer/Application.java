@@ -1,6 +1,5 @@
 package chav1961.installer;
 
-import java.awt.Font;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +22,7 @@ import chav1961.purelib.i18n.interfaces.Localizer;
 import chav1961.purelib.ui.swing.useful.JSimpleSplash;
 
 // https://nsis.sourceforge.io/Simple_tutorials
+// https://www.javamadesoeasy.com/2017/05/call-java-methods-from-javascript-js_35.html
 public class Application {
 	public static final Map<String, Object>	INSTALLATION_CONTEXT = new HashMap<>();
 	public static final String	CTX_SERVICE = "__service__";
