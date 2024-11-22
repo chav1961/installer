@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -97,9 +98,13 @@ public class StandardUtilities {
 					)
 			);
 		}
+		final JEditorPane	pane = new JEditorPane("text/html","");
+		
+		pane.setEditable(false);
+		pane.setOpaque(false);
 		return new LastScreenContent(w.getLocalizer(),
-				new ContentKeeper<JLabel>(
-					new JLabel(),
+				new ContentKeeper<JEditorPane>(
+					pane,
 					Utils.mkMap(new NamedValue(KEY_TEXT, STD_LAST_SCREEN_PREAMBLE),
 						new NamedValue(KEY_PARAMS, new Supplier[] {
 								()->service.getLocalizer().getValue(service.getProductName()),
@@ -147,7 +152,7 @@ public class StandardUtilities {
 			for(int index = 0; index < parms.length; index++) {
 				parms[index] = values[index].get();
 			}
-			((JLabel)preamble.content).setText(String.format(InternalUtils.loadHtml(localizer, preamble.attributes.get(KEY_TEXT).toString()), parms));
+			((JEditorPane)preamble.content).setText(String.format(InternalUtils.loadHtml(localizer, preamble.attributes.get(KEY_TEXT).toString()), parms));
 			for (ContentKeeper<?> item : options) {
 				((JCheckBox)item.content).setText(localizer.getValue(item.attributes.get(KEY_TEXT).toString()));
 			}
