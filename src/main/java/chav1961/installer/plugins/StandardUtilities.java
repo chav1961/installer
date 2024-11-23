@@ -17,6 +17,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.openjdk.nashorn.api.scripting.ScriptObjectMirror;
+import org.openjdk.nashorn.api.scripting.ScriptUtils;
 
 import chav1961.installer.Application;
 import chav1961.installer.Wizard;
@@ -79,6 +80,7 @@ public class StandardUtilities {
 		
 		if (parm.hasMember(NAME_LAST_SCREEN_FIELD_NEED_REBOOT)) {
 			options.add(new ContentKeeper<JCheckBox>(
+					NAME_LAST_SCREEN_FIELD_NEED_REBOOT,
 					new JCheckBox("",(Boolean)parm.getMember(NAME_LAST_SCREEN_FIELD_NEED_REBOOT)), 
 					Utils.mkMap(new NamedValue<String>(KEY_TEXT, STD_LAST_SCREEN_FIELD_NEED_REBOOT))
 					)
@@ -86,6 +88,7 @@ public class StandardUtilities {
 		}
 		if (parm.hasMember(NAME_LAST_SCREEN_FIELD_RUN_APPLICATION)) {
 			options.add(new ContentKeeper<JCheckBox>(
+					NAME_LAST_SCREEN_FIELD_RUN_APPLICATION,
 					new JCheckBox("",(Boolean)parm.getMember(NAME_LAST_SCREEN_FIELD_RUN_APPLICATION)), 
 					Utils.mkMap(new NamedValue<String>(KEY_TEXT, STD_LAST_SCREEN_FIELD_RUN_APPLICATION))
 					)
@@ -93,18 +96,16 @@ public class StandardUtilities {
 		}
 		if (parm.hasMember(NAME_LAST_SCREEN_FIELD_SHOW_README)) {
 			options.add(new ContentKeeper<JCheckBox>(
+					NAME_LAST_SCREEN_FIELD_SHOW_README,
 					new JCheckBox("",(Boolean)parm.getMember(NAME_LAST_SCREEN_FIELD_SHOW_README)), 
 					Utils.mkMap(new NamedValue<String>(KEY_TEXT, STD_LAST_SCREEN_FIELD_SHOW_README))
 					)
 			);
 		}
-		final JEditorPane	pane = new JEditorPane("text/html","");
-		
-		pane.setEditable(false);
-		pane.setOpaque(false);
 		return new LastScreenContent(w.getLocalizer(),
 				new ContentKeeper<JEditorPane>(
-					pane,
+					"text",
+					InternalUtils.createEditorPane(),
 					Utils.mkMap(new NamedValue(KEY_TEXT, STD_LAST_SCREEN_PREAMBLE),
 						new NamedValue(KEY_PARAMS, new Supplier[] {
 								()->service.getLocalizer().getValue(service.getProductName()),
@@ -118,7 +119,7 @@ public class StandardUtilities {
 				options
 		);
 	}
-	
+
 	public static class LastScreenContent extends JPanel implements LocaleChangeListener {
 		private static final long serialVersionUID = 7203785897240864944L;
 
@@ -143,6 +144,46 @@ public class StandardUtilities {
 		@Override
 		public void localeChanged(final Locale oldLocale, final Locale newLocale) throws LocalizationException {
 			fillLocalizedStrings();
+		}
+		
+		public Options getOptions() {
+			boolean	needReboot = false;
+			boolean	runApplication = false;
+			boolean	showReadme = false;
+			
+			for (ContentKeeper<?> item : options) {
+				switch (item.name) {
+					case NAME_LAST_SCREEN_FIELD_NEED_REBOOT		:
+						needReboot = ((JCheckBox)item.content).isSelected();
+						break;
+					case NAME_LAST_SCREEN_FIELD_RUN_APPLICATION	:
+						runApplication = ((JCheckBox)item.content).isSelected();
+						break;
+					case NAME_LAST_SCREEN_FIELD_SHOW_README		:
+						showReadme = ((JCheckBox)item.content).isSelected();
+						break;
+					default :
+						throw new UnsupportedOperationException("Item name ["+item.name+"] is not supported yet");
+				}
+			}
+			return new Options(needReboot, runApplication, showReadme);
+		}
+
+		public static class Options {
+			public final boolean needReboot;
+			public final boolean runApplication;
+			public final boolean showReadme;
+			
+			private Options(final boolean needReboot, final boolean runApplication, final boolean showReadme) {
+				this.needReboot = needReboot;
+				this.runApplication = runApplication;
+				this.showReadme = showReadme;
+			}
+
+			@Override
+			public String toString() {
+				return "Options [needReboot=" + needReboot + ", runApplication=" + runApplication + ", showReadme=" + showReadme + "]";
+			}
 		}
 		
 		private void fillLocalizedStrings() {

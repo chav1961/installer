@@ -173,9 +173,10 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 		}
 		else {
 			if (oldComponent != null) {
-				remove(oldComponent);
+				getContentPane().remove(oldComponent);
 			}
-			add(content, BorderLayout.CENTER);
+			getContentPane().add(content, BorderLayout.CENTER);
+			getContentPane().repaint();
 			SwingUtils.refreshLocale(content, getLocalizer().currentLocale().getLocale(), getLocalizer().currentLocale().getLocale());
 			oldComponent = content;
 		}

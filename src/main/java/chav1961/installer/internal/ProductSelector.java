@@ -3,7 +3,6 @@ package chav1961.installer.internal;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
@@ -11,14 +10,13 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JEditorPane;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import chav1961.installer.interfaces.InstallationService;
-import chav1961.purelib.basic.MimeType;
-import chav1961.purelib.basic.Utils;
 import chav1961.purelib.basic.exceptions.LocalizationException;
 import chav1961.purelib.basic.interfaces.LoggerFacade.Severity;
 import chav1961.purelib.i18n.interfaces.Localizer;
@@ -37,7 +35,7 @@ public class ProductSelector extends JPanel implements LocaleChangeListener, Loc
 
 	private final Localizer			localizer;
 	private final JList<InstallationService>	toSelect;
-	private final JLabel			description = new JLabel();
+	private final JEditorPane		description = InternalUtils.createEditorPane();
 
 	public ProductSelector(final Localizer localizer, final List<InstallationService> products) {
 		super(new BorderLayout(10, 10));

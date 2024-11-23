@@ -70,25 +70,31 @@ public class Application {
 					bindings.put("WIZARD", w);
 					INSTALLATION_CONTEXT.put(CTX_WIZARD, w);
 					try {
-						w.setAvatar(ps.getAvatar());
 						w.setVisible(true);
 						
-						switch (w.pushContent("_sp_", localizer, ProductSelector.SEL_STEP, ProductSelector.SEL_TITLE, ps, false, (c)->ps.validateContent())) {
-							case CANCEL : case COMPLETE : case PREVIOUS : case CANCEL_WITH_KEEP_SETTINGS :
-								break;
-							case NEXT	:
-								final InstallationService	service = ps.getServiceSelected();
-								final String	script = service.getInstallationScript(PureLibSettings.CURRENT_OS); 
-
-								bindings.put("SERVICE", service);
-								INSTALLATION_CONTEXT.put(CTX_SERVICE, service);
-								
-								localizer.push(service.getLocalizer());
-								w.setAvatar(service.getAvatar());
-								engine.eval(script);
-								break;
-							default:
-								throw new UnsupportedOperationException("Wizard action is not supported yet");
+loop:					for(;;) {
+							w.setAvatar(ps.getAvatar());
+							switch (w.pushContent("_sp_", localizer, ProductSelector.SEL_STEP, ProductSelector.SEL_TITLE, ps, false, (c)->ps.validateContent())) {
+								case CANCEL : case COMPLETE : case PREVIOUS : case CANCEL_WITH_KEEP_SETTINGS :
+									break loop;
+								case NEXT	:
+									final InstallationService	service = ps.getServiceSelected();
+									final String	script = service.getInstallationScript(PureLibSettings.CURRENT_OS); 
+	
+									bindings.put("SERVICE", service);
+									INSTALLATION_CONTEXT.put(CTX_SERVICE, service);
+									
+									localizer.push(service.getLocalizer());
+									w.setAvatar(service.getAvatar());
+									if ((Boolean)engine.eval(script)) {
+										break loop;
+									}
+									else {
+										break;
+									}
+								default:
+									throw new UnsupportedOperationException("Wizard action is not supported yet");
+							}
 						}
 					} finally {
 						w.setVisible(false);
