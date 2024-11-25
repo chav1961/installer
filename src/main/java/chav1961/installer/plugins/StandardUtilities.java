@@ -1,5 +1,6 @@
 package chav1961.installer.plugins;
 
+
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import chav1961.installer.Application;
 import chav1961.installer.Wizard;
 import chav1961.installer.interfaces.ExitOptions;
 import chav1961.installer.interfaces.InstallationService;
+import chav1961.installer.interfaces.OptionsKeeper;
 import chav1961.installer.internal.ContentKeeper;
 import chav1961.installer.internal.InternalUtils;
 import chav1961.purelib.basic.NamedValue;
@@ -115,7 +117,14 @@ public class StandardUtilities {
 		);
 	}
 
-	public static class LastScreenContent extends JPanel implements LocaleChangeListener {
+	/*
+	 * {"driver":"path","connString":"connectionString","user":"name","password":"password"}
+	 */
+	public JComponent getJdbcSettingsScreen(final ScriptObjectMirror parm) {
+		return null;
+	}	
+	
+	public static class LastScreenContent extends JPanel implements LocaleChangeListener, OptionsKeeper<LastScreenContent.Options> {
 		private static final long serialVersionUID = 7203785897240864944L;
 
 		private final Localizer					localizer;
@@ -141,6 +150,7 @@ public class StandardUtilities {
 			fillLocalizedStrings();
 		}
 		
+		@Override
 		public Options getOptions() {
 			boolean	needReboot = false;
 			boolean	runApplication = false;
