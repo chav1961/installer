@@ -29,6 +29,7 @@ public class Application {
 	public static final String	CTX_WIZARD = "__wizard__";
 	
 	private static final String	ARG_DEBUG = "d";
+	private static final String	ARG_DEVELOPMENT = "devel";
 	private static final URI	LOCALIZER_URI = URI.create(Localizer.LOCALIZER_SCHEME+":xml:root://"+Application.class.getName()+"/i18n.xml");
 	
 	public static void main(final String[] args) {
@@ -64,7 +65,7 @@ public class Application {
 				}
 				if (!installations.isEmpty()) {
 					PureLibSettings.PURELIB_LOCALIZER.push(localizer);
-					final Wizard			w = new Wizard(localizer);
+					final Wizard			w = new Wizard(localizer, parsed.getValue(ARG_DEVELOPMENT, boolean.class));
 					final ProductSelector	ps = new ProductSelector(localizer, installations);
 
 					bindings.put("WIZARD", w);
@@ -120,6 +121,7 @@ loop:					for(;;) {
 	
 	static class ApplicationArgParser extends ArgParser {
 		private static final ArgParser.AbstractArg[]	KEYS = {
+			new BooleanArg(ARG_DEVELOPMENT, false, "Turn on development mode", false),
 			new BooleanArg(ARG_DEBUG, false, "Turn on debug trace", false)
 		};
 		

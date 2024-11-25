@@ -2,8 +2,6 @@ package chav1961.installer.plugins;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
-import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -17,7 +15,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.openjdk.nashorn.api.scripting.ScriptObjectMirror;
-import org.openjdk.nashorn.api.scripting.ScriptUtils;
 
 import chav1961.installer.Application;
 import chav1961.installer.Wizard;
@@ -25,8 +22,6 @@ import chav1961.installer.interfaces.ExitOptions;
 import chav1961.installer.interfaces.InstallationService;
 import chav1961.installer.internal.ContentKeeper;
 import chav1961.installer.internal.InternalUtils;
-import chav1961.purelib.basic.DottedVersion;
-import chav1961.purelib.basic.MimeType;
 import chav1961.purelib.basic.NamedValue;
 import chav1961.purelib.basic.Utils;
 import chav1961.purelib.basic.exceptions.LocalizationException;
