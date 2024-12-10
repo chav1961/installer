@@ -4,6 +4,8 @@ module chav1961.installer {
 	requires java.scripting;
 	requires java.desktop;
 	requires transitive org.openjdk.nashorn;
+	requires java.sql;
+	requires java.xml;
 	
 	exports chav1961.installer;
 	exports chav1961.installer.interfaces;

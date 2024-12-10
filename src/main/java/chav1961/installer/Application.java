@@ -30,6 +30,7 @@ public class Application {
 	
 	private static final String	ARG_DEBUG = "d";
 	private static final String	ARG_DEVELOPMENT = "devel";
+	private static final String	ARG_CONFIG = "cfg";
 	private static final URI	LOCALIZER_URI = URI.create(Localizer.LOCALIZER_SCHEME+":xml:root://"+Application.class.getName()+"/i18n.xml");
 	
 	public static void main(final String[] args) {
@@ -121,6 +122,7 @@ loop:					for(;;) {
 	
 	static class ApplicationArgParser extends ArgParser {
 		private static final ArgParser.AbstractArg[]	KEYS = {
+			new FileArg(ARG_CONFIG, false, true, "Config file to install product from. If missing, SPI service will be used to find products available"),
 			new BooleanArg(ARG_DEVELOPMENT, false, "Turn on development mode", false),
 			new BooleanArg(ARG_DEBUG, false, "Turn on debug trace", false)
 		};
