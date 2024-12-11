@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
@@ -159,27 +160,98 @@ public class XMLBasedProduct implements InstallationService {
 		private static final URI	INTERNAL_URI = URI.create(Localizer.LOCALIZER_SCHEME+":internal:/");
 
 		private final Set<String>	keys = new HashSet<>();
-		private final EnumMap<SupportedLanguages, Map<String, String>>	pairs = new EnumMap<>(SupportedLanguages.class);
-		private final EnumMap<SupportedLanguages, Map<String, String>>	helps = new EnumMap<>(SupportedLanguages.class);
+		private final EnumMap<SupportedLanguages, Map<String, String>>	dictionary = new EnumMap<>(SupportedLanguages.class);
+		private final EnumMap<SupportedLanguages, Map<String, String>>	advancedDictionary = new EnumMap<>(SupportedLanguages.class);
 
-		InternalLocalizer(final Element keys, final Element helps) throws ContentException, NullPointerException {
-			XMLUtils.walkDownXML(keys, (mode, node)->{
-				if (mode == NodeEnterMode.ENTER) {
-					switch (node.getTagName()) {
-						case "lang"	: 
-						case "key"	:
-						default :
-					}
+		InternalLocalizer(final Element pairs, final Element helps) throws ContentException, NullPointerException {
+			final Set<String>			tempKeys = new HashSet<>();
+			final Map<String, String>	tempPairs = new HashMap<>();
+			final SupportedLanguages[]	tempLang = new SupportedLanguages[1];
+			
+			XMLUtils.walkDownXML(pairs, (mode, node)->{
+				switch (mode) {
+					case ENTER	:
+						switch (node.getTagName()) {
+							case "lang"	:
+								tempKeys.clear();
+								tempPairs.clear();
+								tempLang[0] = SupportedLanguages.valueOf(node.getAttribute("name"));
+								break;
+							case "key"	:
+								final String	key = node.getAttribute("name").trim(); 
+								
+								if (tempKeys.contains(key)) {
+									throw new ContentException("Duplicate key ["+key+"]");
+								}
+								else {
+									tempKeys.add(key);
+									tempPairs.put(key, node.getTextContent().trim());
+								}
+								break;
+							default :
+								break;
+						}
+						break;
+					case EXIT	:
+						switch (node.getTagName()) {
+							case "lang"	:
+								if (keys.isEmpty()) {
+									keys.addAll(tempKeys);
+								}
+								else if (!keys.equals(tempKeys)) {
+									throw new ContentException("Different number of keys");
+								}
+								else {
+									dictionary.put(tempLang[0], new HashMap<>(tempPairs)); 
+								}
+								break;
+							default :
+								break;
+						}
+						break;
+					default:
+						break;
 				}
 				return ContinueMode.CONTINUE;
 			});
 			XMLUtils.walkDownXML(helps, (mode, node)->{
-				if (mode == NodeEnterMode.ENTER) {
-					switch (node.getTagName()) {
-						case "lang"	: 
-						case "key"	:
-						default :
-					}
+				switch (mode) {
+					case ENTER	:
+						switch (node.getTagName()) {
+							case "lang"	:
+								tempKeys.clear();
+								tempPairs.clear();
+								tempLang[0] = SupportedLanguages.valueOf(node.getAttribute("name"));
+								break;
+							case "key"	:
+								final String	key = node.getAttribute("name").trim(); 
+								
+								tempKeys.add(key);
+								tempPairs.put(key, node.getTextContent().trim());
+								break;
+							default :
+								break;
+						}
+						break;
+					case EXIT	:
+						switch (node.getTagName()) {
+							case "lang"	:
+								if (keys.isEmpty()) {
+									keys.addAll(tempKeys);
+								}
+								else if (!keys.equals(tempKeys)) {
+									throw new ContentException("Different number of keys");
+								}
+								else {
+									advancedDictionary.put(tempLang[0], new HashMap<>(tempPairs)); 
+								}
+								break;
+							default :
+								break;
+						}
+						break;
+					default:
+						break;
 				}
 				return ContinueMode.CONTINUE;
 			});
@@ -234,14 +306,14 @@ public class XMLBasedProduct implements InstallationService {
 			else {
 				final SupportedLanguages	lang = SupportedLanguages.of(locale);
 				
-				if (!pairs.containsKey(lang)) {
+				if (!dictionary.containsKey(lang)) {
 					throw new LocalizationException("Language ["+lang+"] is not supported with the localizer");
 				}
-				else if (!pairs.get(lang).containsKey(key)) {
+				else if (!dictionary.get(lang).containsKey(key)) {
 					throw new LocalizationException("Localization key ["+key+"] not found anywhere");
 				}
 				else {
-					return pairs.get(lang).get(key);
+					return dictionary.get(lang).get(key);
 				}
 			}
 		}
@@ -250,10 +322,10 @@ public class XMLBasedProduct implements InstallationService {
 		protected boolean isLocaleSupported(final String key, final Locale locale) throws LocalizationException, IllegalArgumentException {
 			final SupportedLanguages	lang = SupportedLanguages.of(locale);
 			
-			if (!pairs.containsKey(lang)) {
+			if (!dictionary.containsKey(lang)) {
 				return false;
 			}
-			else if (!pairs.get(lang).containsKey(key)) {
+			else if (!dictionary.get(lang).containsKey(key)) {
 				return false;
 			}
 			else {
@@ -269,7 +341,7 @@ public class XMLBasedProduct implements InstallationService {
 		protected String getHelp(final String helpId, final Locale locale, final String encoding) throws LocalizationException, IllegalArgumentException {
 			final SupportedLanguages	lang = SupportedLanguages.of(locale);
 			
-			return helps.get(lang).get(helpId);
+			return advancedDictionary.get(lang).get(helpId);
 		}
 	}
 }

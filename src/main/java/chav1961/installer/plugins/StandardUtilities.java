@@ -108,31 +108,34 @@ public class StandardUtilities {
 		final Wizard					w = (Wizard)Application.INSTALLATION_CONTEXT.get(Application.CTX_WIZARD);
 		final InstallationService		service = (InstallationService)Application.INSTALLATION_CONTEXT.get(Application.CTX_SERVICE);
 		final List<ContentKeeper<?>>	options = new ArrayList<>();
-		
-		if (parm.hasMember(NAME_LAST_SCREEN_FIELD_NEED_REBOOT)) {
-			options.add(new ContentKeeper<JCheckBox>(
-					NAME_LAST_SCREEN_FIELD_NEED_REBOOT,
-					new JCheckBox("",(Boolean)parm.getMember(NAME_LAST_SCREEN_FIELD_NEED_REBOOT)), 
-					Utils.mkMap(new NamedValue<String>(KEY_TEXT, STD_LAST_SCREEN_FIELD_NEED_REBOOT))
-					)
-			);
-		}
-		if (parm.hasMember(NAME_LAST_SCREEN_FIELD_RUN_APPLICATION)) {
-			options.add(new ContentKeeper<JCheckBox>(
-					NAME_LAST_SCREEN_FIELD_RUN_APPLICATION,
-					new JCheckBox("",(Boolean)parm.getMember(NAME_LAST_SCREEN_FIELD_RUN_APPLICATION)), 
-					Utils.mkMap(new NamedValue<String>(KEY_TEXT, STD_LAST_SCREEN_FIELD_RUN_APPLICATION))
-					)
-			);
-		}
-		if (parm.hasMember(NAME_LAST_SCREEN_FIELD_SHOW_README)) {
-			options.add(new ContentKeeper<JCheckBox>(
-					NAME_LAST_SCREEN_FIELD_SHOW_README,
-					new JCheckBox("",(Boolean)parm.getMember(NAME_LAST_SCREEN_FIELD_SHOW_README)), 
-					Utils.mkMap(new NamedValue<String>(KEY_TEXT, STD_LAST_SCREEN_FIELD_SHOW_README))
-					)
-			);
-		}
+
+		extractValue2CheckBox(parm, NAME_LAST_SCREEN_FIELD_NEED_REBOOT, STD_LAST_SCREEN_FIELD_NEED_REBOOT, options);
+//		if (parm.hasMember(NAME_LAST_SCREEN_FIELD_NEED_REBOOT)) {
+//			options.add(new ContentKeeper<JCheckBox>(
+//					NAME_LAST_SCREEN_FIELD_NEED_REBOOT,
+//					new JCheckBox("",(Boolean)parm.getMember(NAME_LAST_SCREEN_FIELD_NEED_REBOOT)), 
+//					Utils.mkMap(new NamedValue<String>(KEY_TEXT, STD_LAST_SCREEN_FIELD_NEED_REBOOT))
+//					)
+//			);
+//		}
+		extractValue2CheckBox(parm, NAME_LAST_SCREEN_FIELD_RUN_APPLICATION, STD_LAST_SCREEN_FIELD_RUN_APPLICATION, options);
+//		if (parm.hasMember(NAME_LAST_SCREEN_FIELD_RUN_APPLICATION)) {
+//			options.add(new ContentKeeper<JCheckBox>(
+//					NAME_LAST_SCREEN_FIELD_RUN_APPLICATION,
+//					new JCheckBox("",(Boolean)parm.getMember(NAME_LAST_SCREEN_FIELD_RUN_APPLICATION)), 
+//					Utils.mkMap(new NamedValue<String>(KEY_TEXT, STD_LAST_SCREEN_FIELD_RUN_APPLICATION))
+//					)
+//			);
+//		}
+		extractValue2CheckBox(parm, NAME_LAST_SCREEN_FIELD_SHOW_README, STD_LAST_SCREEN_FIELD_SHOW_README, options);
+//		if (parm.hasMember(NAME_LAST_SCREEN_FIELD_SHOW_README)) {
+//			options.add(new ContentKeeper<JCheckBox>(
+//					NAME_LAST_SCREEN_FIELD_SHOW_README,
+//					new JCheckBox("",(Boolean)parm.getMember(NAME_LAST_SCREEN_FIELD_SHOW_README)), 
+//					Utils.mkMap(new NamedValue<String>(KEY_TEXT, STD_LAST_SCREEN_FIELD_SHOW_README))
+//					)
+//			);
+//		}
 		return new LastScreenContent(w.getLocalizer(),
 				new ContentKeeper<JEditorPane>(
 					"text",
@@ -159,38 +162,42 @@ public class StandardUtilities {
 		final InstallationService		service = (InstallationService)Application.INSTALLATION_CONTEXT.get(Application.CTX_SERVICE);
 		final List<ContentKeeper<?>>	options = new ArrayList<>();
 		
-		if (parm.hasMember(NAME_JDBC_SETTINGS_SCREEN_FIELD_DRIVER)) {
-			options.add(new ContentKeeper<JTextField>(
-					NAME_JDBC_SETTINGS_SCREEN_FIELD_DRIVER,
-					new JTextField(parm.getMember(NAME_JDBC_SETTINGS_SCREEN_FIELD_DRIVER).toString()), 
-					Utils.mkMap(new NamedValue<String>(KEY_TEXT, STD_JDBC_SETTINGS_SCREEN_FIELD_DRIVER))
-					)
-			);
-		}
-		if (parm.hasMember(NAME_JDBC_SETTINGS_SCREEN_FIELD_CONN_STRING)) {
-			options.add(new ContentKeeper<JTextField>(
-					NAME_JDBC_SETTINGS_SCREEN_FIELD_CONN_STRING,
-					new JTextField(parm.getMember(NAME_JDBC_SETTINGS_SCREEN_FIELD_CONN_STRING).toString()), 
-					Utils.mkMap(new NamedValue<String>(KEY_TEXT, STD_JDBC_SETTINGS_SCREEN_FIELD_CONN_STRING))
-					)
-			);
-		}
-		if (parm.hasMember(NAME_JDBC_SETTINGS_SCREEN_FIELD_USER)) {
-			options.add(new ContentKeeper<JTextField>(
-					NAME_JDBC_SETTINGS_SCREEN_FIELD_USER,
-					new JTextField(parm.getMember(NAME_JDBC_SETTINGS_SCREEN_FIELD_USER).toString()), 
-					Utils.mkMap(new NamedValue<String>(KEY_TEXT, STD_JDBC_SETTINGS_SCREEN_FIELD_USER))
-					)
-			);
-		}
-		if (parm.hasMember(NAME_JDBC_SETTINGS_SCREEN_FIELD_PASSWORD)) {
-			options.add(new ContentKeeper<JTextField>(
-					NAME_JDBC_SETTINGS_SCREEN_FIELD_PASSWORD,
-					new JPasswordField(parm.getMember(NAME_JDBC_SETTINGS_SCREEN_FIELD_PASSWORD).toString()), 
-					Utils.mkMap(new NamedValue<String>(KEY_TEXT, STD_JDBC_SETTINGS_SCREEN_FIELD_PASSWORD))
-					)
-			);
-		}
+		extractValue2TextField(parm, NAME_JDBC_SETTINGS_SCREEN_FIELD_DRIVER, STD_JDBC_SETTINGS_SCREEN_FIELD_DRIVER, options);
+//		if (parm.hasMember(NAME_JDBC_SETTINGS_SCREEN_FIELD_DRIVER)) {
+//			options.add(new ContentKeeper<JTextField>(
+//					NAME_JDBC_SETTINGS_SCREEN_FIELD_DRIVER,
+//					new JTextField(parm.getMember(NAME_JDBC_SETTINGS_SCREEN_FIELD_DRIVER).toString()), 
+//					Utils.mkMap(new NamedValue<String>(KEY_TEXT, STD_JDBC_SETTINGS_SCREEN_FIELD_DRIVER))
+//					)
+//			);
+//		}
+		extractValue2TextField(parm, NAME_JDBC_SETTINGS_SCREEN_FIELD_CONN_STRING, STD_JDBC_SETTINGS_SCREEN_FIELD_CONN_STRING, options);
+//		if (parm.hasMember(NAME_JDBC_SETTINGS_SCREEN_FIELD_CONN_STRING)) {
+//			options.add(new ContentKeeper<JTextField>(
+//					NAME_JDBC_SETTINGS_SCREEN_FIELD_CONN_STRING,
+//					new JTextField(parm.getMember(NAME_JDBC_SETTINGS_SCREEN_FIELD_CONN_STRING).toString()), 
+//					Utils.mkMap(new NamedValue<String>(KEY_TEXT, STD_JDBC_SETTINGS_SCREEN_FIELD_CONN_STRING))
+//					)
+//			);
+//		}
+		extractValue2TextField(parm, NAME_JDBC_SETTINGS_SCREEN_FIELD_USER, STD_JDBC_SETTINGS_SCREEN_FIELD_USER, options);
+//		if (parm.hasMember(NAME_JDBC_SETTINGS_SCREEN_FIELD_USER)) {
+//			options.add(new ContentKeeper<JTextField>(
+//					NAME_JDBC_SETTINGS_SCREEN_FIELD_USER,
+//					new JTextField(parm.getMember(NAME_JDBC_SETTINGS_SCREEN_FIELD_USER).toString()), 
+//					Utils.mkMap(new NamedValue<String>(KEY_TEXT, STD_JDBC_SETTINGS_SCREEN_FIELD_USER))
+//					)
+//			);
+//		}
+		extractValue2TextField(parm, NAME_JDBC_SETTINGS_SCREEN_FIELD_PASSWORD, STD_JDBC_SETTINGS_SCREEN_FIELD_PASSWORD, options);
+//		if (parm.hasMember(NAME_JDBC_SETTINGS_SCREEN_FIELD_PASSWORD)) {
+//			options.add(new ContentKeeper<JTextField>(
+//					NAME_JDBC_SETTINGS_SCREEN_FIELD_PASSWORD,
+//					new JPasswordField(parm.getMember(NAME_JDBC_SETTINGS_SCREEN_FIELD_PASSWORD).toString()), 
+//					Utils.mkMap(new NamedValue<String>(KEY_TEXT, STD_JDBC_SETTINGS_SCREEN_FIELD_PASSWORD))
+//					)
+//			);
+//		}
 		return new JdbcSettingsContent(w.getLocalizer(),
 				new ContentKeeper<JEditorPane>(
 					"text",
@@ -208,6 +215,55 @@ public class StandardUtilities {
 				options
 		);
 	}	
+	
+	/*
+	 * {"driver":"path","connString":"connectionString","user":"name","password":"password","schema":"defaultName","scripts":"URI"}
+	 */
+	public JComponent getSchemaSettingsScreen(final ScriptObjectMirror parm) {
+		final Wizard					w = (Wizard)Application.INSTALLATION_CONTEXT.get(Application.CTX_WIZARD);
+		final InstallationService		service = (InstallationService)Application.INSTALLATION_CONTEXT.get(Application.CTX_SERVICE);
+		final List<ContentKeeper<?>>	options = new ArrayList<>();
+
+		extractValue2TextField(parm, NAME_JDBC_SETTINGS_SCREEN_FIELD_DRIVER, STD_JDBC_SETTINGS_SCREEN_FIELD_DRIVER, options);
+		extractValue2TextField(parm, NAME_JDBC_SETTINGS_SCREEN_FIELD_CONN_STRING, STD_JDBC_SETTINGS_SCREEN_FIELD_CONN_STRING, options);
+		extractValue2TextField(parm, NAME_JDBC_SETTINGS_SCREEN_FIELD_USER, STD_JDBC_SETTINGS_SCREEN_FIELD_USER, options);
+		extractValue2TextField(parm, NAME_JDBC_SETTINGS_SCREEN_FIELD_PASSWORD, STD_JDBC_SETTINGS_SCREEN_FIELD_PASSWORD, options);
+		
+		return null;
+	}
+
+	private static void extractValue2CheckBox(final ScriptObjectMirror parm, final String key, final String title, final List<ContentKeeper<?>> options) {
+		if (parm.hasMember(key)) {
+			options.add(new ContentKeeper<JCheckBox>(
+					key,
+					new JCheckBox("",(Boolean)parm.getMember(key)), 
+					Utils.mkMap(new NamedValue<String>(KEY_TEXT, title))
+					)
+			);
+		}
+	}
+	
+	private static void extractValue2TextField(final ScriptObjectMirror parm, final String key, final String title, final List<ContentKeeper<?>> options) {
+		if (parm.hasMember(key)) {
+			options.add(new ContentKeeper<JTextField>(
+					key,
+					new JTextField(parm.getMember(key).toString()), 
+					Utils.mkMap(new NamedValue<String>(KEY_TEXT, title))
+					)
+			);
+		}
+	}
+
+	private static void extractValue2PasswordField(final ScriptObjectMirror parm, final String key, final String title, final List<ContentKeeper<?>> options) {
+		if (parm.hasMember(key)) {
+			options.add(new ContentKeeper<JPasswordField>(
+					key,
+					new JPasswordField(parm.getMember(key).toString()), 
+					Utils.mkMap(new NamedValue<String>(KEY_TEXT, title))
+					)
+			);
+		}
+	}
 	
 	public static class LastScreenContent extends JPanel implements LocaleChangeListener, OptionsKeeper<LastScreenContent.Options> {
 		private static final long serialVersionUID = 7203785897240864944L;
