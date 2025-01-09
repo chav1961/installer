@@ -66,8 +66,8 @@ public class Application {
 				}
 				if (!installations.isEmpty()) {
 					PureLibSettings.PURELIB_LOCALIZER.push(localizer);
-					final Wizard			w = new Wizard(localizer, parsed.getValue(ARG_DEVELOPMENT, boolean.class));
 					final ProductSelector	ps = new ProductSelector(localizer, installations);
+					final Wizard			w = new Wizard(localizer, parsed.getValue(ARG_DEVELOPMENT, boolean.class));
 
 					bindings.put("WIZARD", w);
 					INSTALLATION_CONTEXT.put(CTX_WIZARD, w);

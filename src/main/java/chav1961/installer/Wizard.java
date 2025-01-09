@@ -51,10 +51,13 @@ import chav1961.installer.internal.ProductSelector;
 import chav1961.installer.plugins.StandardUtilities;
 import chav1961.purelib.basic.PureLibSettings;
 import chav1961.purelib.basic.Utils;
+import chav1961.purelib.basic.exceptions.ContentException;
 import chav1961.purelib.basic.exceptions.LocalizationException;
 import chav1961.purelib.basic.interfaces.LoggerFacade;
+import chav1961.purelib.basic.interfaces.LoggerFacade.Severity;
 import chav1961.purelib.basic.interfaces.LoggerFacadeOwner;
 import chav1961.purelib.model.FieldFormat;
+import chav1961.purelib.i18n.MutableJsonLocalizer;
 import chav1961.purelib.i18n.interfaces.Localizer;
 import chav1961.purelib.i18n.interfaces.Localizer.LocaleChangeListener;
 import chav1961.purelib.i18n.interfaces.LocalizerOwner;
@@ -145,12 +148,18 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 		});
 		
 		if (developmentMode) {
-			final JTabbedPane		pane = new JTabbedPane();
-			final DevelopmentScreen	devel = new DevelopmentScreen();
-			
-			pane.addTab("development", devel);
-			pane.addTab("test", container);			
-			getContentPane().add(pane, BorderLayout.CENTER);
+			try {
+				final JTabbedPane			pane = new JTabbedPane();
+				final MutableJsonLocalizer	temp = new MutableJsonLocalizer(); 
+				final DevelopmentScreen 	devel = new DevelopmentScreen(temp, getLogger());
+				
+				pane.addTab("development", devel);
+				pane.addTab("test", container);			
+				getContentPane().add(pane, BorderLayout.CENTER);
+			} catch (ContentException exc) {
+				getLogger().message(Severity.error, "Development mode failed ("+exc.getLocalizedMessage()+"), ordinal mode will be selected");
+				getContentPane().add(container, BorderLayout.CENTER);
+			}
 		}
 		else {
 			getContentPane().add(container, BorderLayout.CENTER);
