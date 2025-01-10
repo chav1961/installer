@@ -1,74 +1,109 @@
 package chav1961.installer.products;
 
 import java.net.URI;
+import java.util.EnumMap;
 
 import javax.swing.Icon;
 
 import chav1961.installer.interfaces.InstallationService;
 import chav1961.purelib.basic.DottedVersion;
 import chav1961.purelib.basic.PureLibSettings.CurrentOS;
-import chav1961.purelib.i18n.interfaces.Localizer;
+import chav1961.purelib.i18n.MutableJsonLocalizer;
 
 public class DevelopingProduct implements InstallationService {
+	private final DottedVersion	version = new DottedVersion();
+	private final EnumMap<CurrentOS, String>	scripts = new EnumMap<>(CurrentOS.class);
+	private final MutableJsonLocalizer			localizer = new MutableJsonLocalizer();
+	private String				productName = "<new>";
+	private String				productDescription = "<new>";
+	private String				productVendor = "<new>";
+	private URI					productSite = URI.create("http://localhost");
+	private Icon				productIcon = null;
+	private Icon				productAvatar = null;
 
+	public DevelopingProduct() {
+		
+	}
+	
 	@Override
-	public Localizer getLocalizer() {
-		// TODO Auto-generated method stub
-		return null;
+	public MutableJsonLocalizer getLocalizer() {
+		return localizer;
 	}
 
 	@Override
 	public String getProductName() {
-		// TODO Auto-generated method stub
-		return null;
+		return productName;
 	}
 
 	@Override
 	public String getProductDescription() {
-		// TODO Auto-generated method stub
-		return null;
+		return productDescription;
 	}
 
 	@Override
 	public DottedVersion getProductVersion() {
-		// TODO Auto-generated method stub
-		return null;
+		return version;
 	}
 
 	@Override
 	public String getProductVendor() {
-		// TODO Auto-generated method stub
-		return null;
+		return productVendor;
 	}
 
 	@Override
 	public URI getProductSite() {
-		// TODO Auto-generated method stub
-		return null;
+		return productSite;
 	}
 
 	@Override
 	public Icon getProductIcon() {
-		// TODO Auto-generated method stub
-		return null;
+		return productIcon;
 	}
 
 	@Override
 	public Icon getAvatar() {
-		// TODO Auto-generated method stub
-		return null;
+		return productAvatar;
 	}
 
 	@Override
-	public boolean isCurrentOsSupported(CurrentOS os) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean isCurrentOsSupported(final CurrentOS os) {
+		return scripts.containsKey(os);
 	}
 
 	@Override
-	public String getInstallationScript(CurrentOS os) {
-		// TODO Auto-generated method stub
-		return null;
+	public String getInstallationScript(final CurrentOS os) {
+		return scripts.get(os);
 	}
 
+	public EnumMap<CurrentOS, String> getScripts() {
+		return scripts;
+	}
+
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+
+	public void setProductDescription(String productDescription) {
+		this.productDescription = productDescription;
+	}
+
+	public void setProductVendor(String productVendor) {
+		this.productVendor = productVendor;
+	}
+
+	public void setProductSite(URI productSite) {
+		this.productSite = productSite;
+	}
+
+	public void setProductIcon(Icon productIcon) {
+		this.productIcon = productIcon;
+	}
+
+	public void setProductAvatar(Icon productAvatar) {
+		this.productAvatar = productAvatar;
+	}
+	
+	public void setProductVersion(final DottedVersion version) {
+		this.version.assign(version);
+	}
 }
