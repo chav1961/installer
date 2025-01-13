@@ -1,5 +1,6 @@
 package chav1961.installer;
 
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -15,14 +16,17 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 
+import chav1961.installer.internal.ProjectInfo;
 import chav1961.purelib.basic.CharUtils;
+import chav1961.purelib.basic.PureLibSettings;
 import chav1961.purelib.basic.exceptions.ContentException;
-import chav1961.purelib.basic.exceptions.SyntaxException;
 import chav1961.purelib.basic.interfaces.LoggerFacade;
 import chav1961.purelib.basic.interfaces.LoggerFacade.Severity;
 import chav1961.purelib.i18n.interfaces.Localizer;
-import chav1961.purelib.streams.char2char.CreoleWriter.CreoleLexema;
+import chav1961.purelib.model.ContentModelFactory;
+import chav1961.purelib.model.interfaces.ContentMetadataInterface;
 import chav1961.purelib.ui.HighlightItem;
+import chav1961.purelib.ui.swing.AutoBuiltForm;
 import chav1961.purelib.ui.swing.useful.JLocalizerContentEditor;
 import chav1961.purelib.ui.swing.useful.JLocalizerContentEditor.ContentType;
 import chav1961.purelib.ui.swing.useful.JStateString;
@@ -36,7 +40,7 @@ class DevelopmentScreen extends JPanel {
 
 	private final JTabbedPane	pane = new JTabbedPane();
 	private final JLocalizerContentEditor	editor;
-	private final ProjectInfo	info = new ProjectInfo(); 
+	private final ProjectInfo	info; 
 	private final JSHighlighter	script = new JSHighlighter();
 	private final JStateString	state;
 	
@@ -45,8 +49,12 @@ class DevelopmentScreen extends JPanel {
 		this.editor = new JLocalizerContentEditor(localizer, logger, (l,t)->{store(l, t);}, true, false);
 		this.state = new JStateString(localizer);
 		this.state.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+		this.info = new ProjectInfo(logger);
 
-		pane.addTab("About", info);
+		final ContentMetadataInterface			mdi = ContentModelFactory.forAnnotatedClass(ProjectInfo.class);
+		final AutoBuiltForm<ProjectInfo, Long>	form = new AutoBuiltForm<>(mdi, localizer, logger, PureLibSettings.INTERNAL_LOADER, info, info);
+		
+		pane.addTab("About", form);
 		pane.addTab("I18N", editor);
 		pane.addTab("Script", new JScrollPane(script));
 		
@@ -66,12 +74,6 @@ class DevelopmentScreen extends JPanel {
 
 	private void store(Localizer l, ContentType t) {
 		// TODO Auto-generated method stub
-	}
-	
-	private static class ProjectInfo extends JPanel {
-		private static final long serialVersionUID = -1035383125356440393L;
-
-		
 	}
 	
 	private static enum LexemaType {

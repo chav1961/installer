@@ -29,6 +29,26 @@
 		<key name="step.completion.type.failed">failed</key>
 		<key name="step.completion.type.skipped">skipped</key>
 		<key name="step.completion.type.not.required">not required</key>
+		
+<!-- Development keys -->
+		<key name="devel.projectInfo">Project info</key>
+		<key name="devel.projectInfo.tt">Project info</key>
+		<key name="devel.projectInfo.help">Project info</key>
+		<key name="devel.projectInfo.name">Name</key>
+		<key name="devel.projectInfo.name.tt">Name</key>
+		<key name="devel.projectInfo.description">Description</key>
+		<key name="devel.projectInfo.description.tt">Description</key>
+		<key name="devel.projectInfo.version">Version</key>
+		<key name="devel.projectInfo.version.tt">Version</key>
+		<key name="devel.projectInfo.vendor">Vendor</key>
+		<key name="devel.projectInfo.vendor.tt">Vendor</key>
+		<key name="devel.projectInfo.site">Site ref</key>
+		<key name="devel.projectInfo.site.tt">Site ref</key>
+		<key name="devel.projectInfo.icon">Icon</key>
+		<key name="devel.projectInfo.icon.tt">Icon</key>
+		<key name="devel.projectInfo.avatar">Avatar</key>
+		<key name="devel.projectInfo.avatar.tt">Avatar</key>
+		
 	</lang> 
 	<lang name="ru">
 <!-- Test set and common definitions  -->
@@ -60,6 +80,26 @@
 		<key name="step.completion.type.failed">аварийно</key>
 		<key name="step.completion.type.skipped">пропущено</key>
 		<key name="step.completion.type.not.required">не требуется</key>
+
+<!-- Development keys -->
+		<key name="devel.projectInfo">Информация о проекте</key>
+		<key name="devel.projectInfo.tt">Информация о проекте</key>
+		<key name="devel.projectInfo.help">Информация о проекте</key>
+		<key name="devel.projectInfo.name">Наименование</key>
+		<key name="devel.projectInfo.name.tt">Наименование</key>
+		<key name="devel.projectInfo.description">Описание</key>
+		<key name="devel.projectInfo.description.tt">Описание</key>
+		<key name="devel.projectInfo.version">Версия</key>
+		<key name="devel.projectInfo.version.tt">Версия</key>
+		<key name="devel.projectInfo.vendor">Разработчик</key>
+		<key name="devel.projectInfo.vendor.tt">Разработчик</key>
+		<key name="devel.projectInfo.site">Ссылка на сайт</key>
+		<key name="devel.projectInfo.site.tt">Ссылка на сайт</key>
+		<key name="devel.projectInfo.icon">Иконка</key>
+		<key name="devel.projectInfo.icon.tt">Иконка</key>
+		<key name="devel.projectInfo.avatar">Аватар</key>
+		<key name="devel.projectInfo.avatar.tt">Аватар</key>
+		
 	</lang> 
 </localization>
 	

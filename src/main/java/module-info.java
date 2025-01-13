@@ -11,6 +11,7 @@ module chav1961.installer {
 	exports chav1961.installer.interfaces;
 	opens chav1961.installer.plugins;
 	opens chav1961.installer to chav1961.purelib;
+	opens chav1961.installer.internal to chav1961.purelib;
 	
 	uses chav1961.installer.interfaces.InstallationPlugin;
 	uses chav1961.installer.interfaces.InstallationService;
