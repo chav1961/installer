@@ -150,8 +150,7 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 		if (developmentMode) {
 			try {
 				final JTabbedPane			pane = new JTabbedPane();
-				final MutableJsonLocalizer	temp = new MutableJsonLocalizer(); 
-				final DevelopmentScreen 	devel = new DevelopmentScreen(temp, getLogger());
+				final DevelopmentScreen 	devel = new DevelopmentScreen(localizer, getLogger());
 				
 				pane.addTab("development", devel);
 				pane.addTab("test", container);			
