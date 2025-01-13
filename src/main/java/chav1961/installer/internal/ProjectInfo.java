@@ -23,23 +23,23 @@ public class ProjectInfo implements FormManager<Long, ProjectInfo>, ModuleAccess
 	
 	@LocaleResource(value="devel.projectInfo.name",tooltip="devel.projectInfo.name.tt")
 	@Format("30ms")
-	public String			name;
+	public String			name = "";
 	
 	@LocaleResource(value="devel.projectInfo.description",tooltip="devel.projectInfo.description.tt")
 	@Format(value="30*5ms",wizardType="")
-	public String			description;
+	public String			description = "";
 	
 	@LocaleResource(value="devel.projectInfo.version",tooltip="devel.projectInfo.version.tt")
 	@Format("30ms")
-	public DottedVersion	version;
+	public DottedVersion	version = new DottedVersion();
 
 	@LocaleResource(value="devel.projectInfo.vendor",tooltip="devel.projectInfo.vendor.tt")
 	@Format("30ms")
-	public String			vendor;
+	public String			vendor = "";
 
 	@LocaleResource(value="devel.projectInfo.site",tooltip="devel.projectInfo.site.tt")
 	@Format("30ms")
-	public URI				site;
+	public URI				site = URI.create("./");
 
 	@LocaleResource(value="devel.projectInfo.icon",tooltip="devel.projectInfo.icon.tt")
 	@Format("24*24")

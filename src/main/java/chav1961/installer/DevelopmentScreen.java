@@ -3,6 +3,7 @@ package chav1961.installer;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -53,7 +54,8 @@ class DevelopmentScreen extends JPanel {
 
 		final ContentMetadataInterface			mdi = ContentModelFactory.forAnnotatedClass(ProjectInfo.class);
 		final AutoBuiltForm<ProjectInfo, Long>	form = new AutoBuiltForm<>(mdi, localizer, logger, PureLibSettings.INTERNAL_LOADER, info, info);
-		
+
+		form.setMaximumSize(new Dimension(250,300));
 		pane.addTab("About", form);
 		pane.addTab("I18N", editor);
 		pane.addTab("Script", new JScrollPane(script));
