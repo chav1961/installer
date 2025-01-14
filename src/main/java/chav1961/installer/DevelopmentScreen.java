@@ -13,6 +13,7 @@ import java.util.Set;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.SpringLayout;
 import javax.swing.border.EtchedBorder;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -54,9 +55,15 @@ class DevelopmentScreen extends JPanel {
 
 		final ContentMetadataInterface			mdi = ContentModelFactory.forAnnotatedClass(ProjectInfo.class);
 		final AutoBuiltForm<ProjectInfo, Long>	form = new AutoBuiltForm<>(mdi, localizer, logger, PureLibSettings.INTERNAL_LOADER, info, info);
+		final SpringLayout	sl = new SpringLayout();
+		final JPanel		panel = new JPanel(sl);
+		
+		panel.add(form);
+		sl.putConstraint(SpringLayout.NORTH, form, 0, SpringLayout.NORTH, panel);
+		sl.putConstraint(SpringLayout.WEST, form, 0, SpringLayout.WEST, panel);
+		sl.putConstraint(SpringLayout.EAST, form, 0, SpringLayout.EAST, panel);
 
-		form.setMaximumSize(new Dimension(250,300));
-		pane.addTab("About", form);
+		pane.addTab("About", panel);
 		pane.addTab("I18N", editor);
 		pane.addTab("Script", new JScrollPane(script));
 		
