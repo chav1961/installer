@@ -44,6 +44,7 @@ import chav1961.installer.interfaces.OptionsKeeper;
 import chav1961.installer.internal.ContentKeeper;
 import chav1961.installer.internal.InternalUtils;
 import chav1961.installer.plugins.StandardUtilities.LastScreenContent.Options;
+import chav1961.purelib.basic.CharUtils.SubstitutionSource;
 import chav1961.purelib.basic.NamedValue;
 import chav1961.purelib.basic.Utils;
 import chav1961.purelib.basic.exceptions.LocalizationException;
@@ -493,6 +494,19 @@ public class StandardUtilities {
 			}
 		}
 	}	
+
+	
+	private static class ParameterSubstitutor implements SubstitutionSource {
+
+		@Override
+		public String getValue(String key) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+		
+	}
+	
+	
 	
 	public static StandardUtilities getInstance() {
 		return instance;
