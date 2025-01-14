@@ -18,6 +18,13 @@
 		<key name="std.confirm.exit.message">Exit installer is required. Confirm your choise!</key>
 		<key name="std.confirm.exit.keep.settings">Keep all context typed (except passwords) for next installation</key>
 
+		<key name="std.jdbc.settings.screen.preamble">uri(jdbcconnectionscreen.cre)</key>
+		<key name="std.jdbc.settings.screen.field.driver">JDBC driver location</key>
+		<key name="std.jdbc.settings.screen.field.conn.string">Connection string</key>
+		<key name="std.jdbc.settings.screen.field.user">User</key>
+		<key name="std.jdbc.settings.screen.field.password">Password</key>
+		<key name="std.jdbc.settings.screen.button.test">Test connection</key>
+
 		<key name="std.last.screen.preamble">uri(lastscreen.cre)</key>
 		<key name="std.last.screen.field.need.reboot">Reboot system now</key>
 		<key name="std.last.screen.field.run.application">Run applcation</key>
@@ -67,6 +74,13 @@
 		<key name="std.confirm.exit.title">Затребован выход из установщика</key>
 		<key name="std.confirm.exit.message">Затребован выход из установщика. Подтвердите свой выбор!</key>
 		<key name="std.confirm.exit.keep.settings">Сохранить все введенные поля (кроме паролей) для последующей установки</key>
+
+		<key name="std.jdbc.settings.screen.preamble">uri(jdbcconnectionscreen.cre)</key>
+		<key name="std.jdbc.settings.screen.field.driver">Расположение JDBC драйвера</key>
+		<key name="std.jdbc.settings.screen.field.conn.string">Строка соединения</key>
+		<key name="std.jdbc.settings.screen.field.user">Пользователь</key>
+		<key name="std.jdbc.settings.screen.field.password">Пароль</key>
+		<key name="std.jdbc.settings.screen.button.test">Тест соединения</key>
 		
 		<key name="std.last.screen.preamble">uri(lastscreen.cre)</key>
 		<key name="std.last.screen.field.need.reboot">Перезагрузить систему</key>

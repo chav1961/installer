@@ -13,6 +13,7 @@ module chav1961.installer {
 	opens chav1961.installer to chav1961.purelib;
 	opens chav1961.installer.internal to chav1961.purelib;
 	
+	uses java.sql.Driver;
 	uses chav1961.installer.interfaces.InstallationPlugin;
 	uses chav1961.installer.interfaces.InstallationService;
 

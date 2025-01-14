@@ -5,6 +5,8 @@
 		<key name="helloworld.product.name">Hello world</key>
 		<key name="helloworld.product.description">description</key>
 		<key name="helloworld.product.vendor">vendor</key>
+		
+		<key name="helloworld.jdbc.settings">JDBC settings</key>
 		<key name="helloworld.install.complete">Install completed</key>
 	</lang> 
 	<lang name="ru">
@@ -12,6 +14,8 @@
 		<key name="helloworld.product.name">Hello world</key>
 		<key name="helloworld.product.description">описание</key>
 		<key name="helloworld.product.vendor">производитель</key>
+		
+		<key name="helloworld.jdbc.settings">Настройки JDBC</key>
 		<key name="helloworld.install.complete">Установка завершена</key>
 	</lang> 
 </localization>
