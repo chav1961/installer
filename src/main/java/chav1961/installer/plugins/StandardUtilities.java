@@ -1,7 +1,9 @@
 package chav1961.installer.plugins;
 
 
+
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.GridLayout;
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,6 +13,7 @@ import java.io.Reader;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -52,6 +55,7 @@ import chav1961.installer.Application;
 import chav1961.installer.Wizard;
 import chav1961.installer.interfaces.ExitOptions;
 import chav1961.installer.interfaces.InstallationService;
+import chav1961.installer.interfaces.OptionsChecker;
 import chav1961.installer.interfaces.OptionsKeeper;
 import chav1961.installer.internal.ContentKeeper;
 import chav1961.installer.internal.InternalUtils;
@@ -114,6 +118,25 @@ public class StandardUtilities {
 		}
 	}
 
+	public static void sendRefresh(final JComponent component) {
+		if (component == null) {
+			throw new NullPointerException("Component can't be null");
+		}
+		else {
+			Component	temp = component;
+			
+			while (temp != null) {
+				if (temp instanceof Wizard) {
+					((Wizard)temp).refresh();
+					return;
+				}
+				else {
+					temp = temp.getParent();
+				}
+			}
+		}
+	}
+	
 	public void saveOptions(final String fileName, final Object... options) throws IOException {
 		if (Utils.checkEmptyOrNullString(fileName)) {
 			throw new IllegalArgumentException("File name to save can't be null or empty string");
@@ -137,11 +160,13 @@ public class StandardUtilities {
 				}
 				else {
 					for(Field f : option.getClass().getFields()) {
-						try {
-							props.setProperty(f.getName(), toString(f.get(option)));
-						} catch (IllegalAccessException e) {
-							throw new IllegalArgumentException(e);
-						} 
+						if (!Modifier.isTransient(f.getModifiers())) {
+							try {
+								props.setProperty(f.getName(), toString(f.get(option)));
+							} catch (IllegalAccessException e) {
+								throw new IllegalArgumentException(e);
+							} 
+						}
 					}
 				}
 			}
@@ -334,7 +359,7 @@ public class StandardUtilities {
 		}
 	}
 	
-	public static class LastScreenContent extends JPanel implements LocaleChangeListener, OptionsKeeper<LastScreenContent.Options> {
+	public static class LastScreenContent extends JPanel implements LocaleChangeListener, OptionsKeeper<LastScreenContent.Options>, OptionsChecker {
 		private static final long serialVersionUID = 7203785897240864944L;
 
 		private final Localizer					localizer;
@@ -384,6 +409,29 @@ public class StandardUtilities {
 			return new Options(needReboot, runApplication, showReadme);
 		}
 
+		@Override
+		public boolean isNextActionAvailable() {
+			return false;
+		}
+
+		@Override
+		public boolean checkOptions() {
+			return true;
+		}
+		
+		private void fillLocalizedStrings() {
+			final Supplier<String>[]	values = (Supplier<String>[])preamble.attributes.get(KEY_PARAMS);
+			final Object[]				parms = new Object[values.length];
+			
+			for(int index = 0; index < parms.length; index++) {
+				parms[index] = values[index].get();
+			}
+			((JEditorPane)preamble.content).setText(String.format(InternalUtils.loadHtml(localizer, preamble.attributes.get(KEY_TEXT).toString()), parms));
+			for (ContentKeeper<?> item : options) {
+				((JCheckBox)item.content).setText(localizer.getValue(item.attributes.get(KEY_TEXT).toString()));
+			}
+		}
+
 		public static class Options {
 			public final boolean needReboot;
 			public final boolean runApplication;
@@ -401,21 +449,9 @@ public class StandardUtilities {
 			}
 		}
 		
-		private void fillLocalizedStrings() {
-			final Supplier<String>[]	values = (Supplier<String>[])preamble.attributes.get(KEY_PARAMS);
-			final Object[]				parms = new Object[values.length];
-			
-			for(int index = 0; index < parms.length; index++) {
-				parms[index] = values[index].get();
-			}
-			((JEditorPane)preamble.content).setText(String.format(InternalUtils.loadHtml(localizer, preamble.attributes.get(KEY_TEXT).toString()), parms));
-			for (ContentKeeper<?> item : options) {
-				((JCheckBox)item.content).setText(localizer.getValue(item.attributes.get(KEY_TEXT).toString()));
-			}
-		}
 	}
 
-	public static class JdbcSettingsContent extends JPanel implements LocaleChangeListener, OptionsKeeper<JdbcSettingsContent.Options> {
+	public static class JdbcSettingsContent extends JPanel implements LocaleChangeListener, OptionsKeeper<JdbcSettingsContent.Options>, OptionsChecker {
 		private static final long serialVersionUID = -5453784299596229643L;
 		private static final Icon				SUCCESS_ICON = new ImageIcon(JdbcSettingsContent.class.getResource("okIcon.png"));
 		private static final Icon				FAILED_ICON = new ImageIcon(JdbcSettingsContent.class.getResource("failedIcon.png"));
@@ -496,10 +532,18 @@ public class StandardUtilities {
 			fillLocalizedStrings();
 		}
 
-		public boolean check() {
-			return testConnection();
+		@Override
+		public boolean isNextActionAvailable() {
+			final Options	opts = getOptions();
+			
+			return opts.driver.exists() && !Utils.checkEmptyOrNullString(opts.connString.toString()) && !Utils.checkEmptyOrNullString(opts.user) && !Utils.checkEmptyOrNullString(new String(opts.password));
 		}
 
+		@Override
+		public boolean checkOptions() {
+			return testConnection();
+		}
+		
 		public boolean testConnection() {
 			final Options	opts = getOptions();
 			
@@ -520,25 +564,6 @@ public class StandardUtilities {
 			}
 		}
 		
-		public static class Options {
-			public final File 	driver;
-			public final URI 	connString;
-			public final String	user;
-			public final char[]	password;
-
-			public Options(File driver, URI connString, String user, char[] password) {
-				this.driver = driver;
-				this.connString = connString;
-				this.user = user;
-				this.password = password;
-			}
-
-			@Override
-			public String toString() {
-				return "Options [driver=" + driver + ", connString=" + connString + ", user=" + user + "]";
-			}
-		}
-
 		private void fillLocalizedStrings() {
 			final Supplier<String>[]	values = (Supplier<String>[])preamble.attributes.get(KEY_PARAMS);
 			final Object[]				parms = new Object[values.length];
@@ -555,79 +580,102 @@ public class StandardUtilities {
 		
 		private boolean verifyOptions(final String currentOption, final JComponent input) {
 			String	value = "";
-			
-			switch (currentOption) {
-				case NAME_JDBC_SETTINGS_SCREEN_FIELD_DRIVER			:
-					value = ((JTextComponent)input).getText().trim();
-					
-					if (Utils.checkEmptyOrNullString(value)) {
-						SwingUtils.getNearestLogger(input).message(Severity.warning, "empty driver name!");
-						return false;
-					}
-					else {
-						final File	f = new File(value);
+
+			try {
+				switch (currentOption) {
+					case NAME_JDBC_SETTINGS_SCREEN_FIELD_DRIVER			:
+						value = ((JTextComponent)input).getText().trim();
 						
-						if (!f.exists() || !f.isFile() || !f.canRead()) {
-							SwingUtils.getNearestLogger(input).message(Severity.warning, "driver name [] not exists!");
+						if (Utils.checkEmptyOrNullString(value)) {
+							SwingUtils.getNearestLogger(input).message(Severity.warning, "empty driver name!");
 							return false;
 						}
 						else {
-							try(final URLClassLoader	loader = new URLClassLoader(new URL[] {f.toURI().toURL()})) {
-								
-								for(Driver item : ServiceLoader.load(java.sql.Driver.class, loader)) {
-									return true;
-								}
-								SwingUtils.getNearestLogger(input).message(Severity.warning, "driver name [] not exists!");
-								return false;
-							} catch (IOException e) {
-								SwingUtils.getNearestLogger(input).message(Severity.warning, "driver name [] not exists!");
-								return false;
-							}
-						}
-					}
-				case NAME_JDBC_SETTINGS_SCREEN_FIELD_CONN_STRING	:
-					value = ((JTextComponent)input).getText().trim();
-					
-					if (Utils.checkEmptyOrNullString(value)) {
-						SwingUtils.getNearestLogger(input).message(Severity.warning, "empty driver name!");
-						return false;
-					}
-					else {
-						try{final URI	conn = URI.create(value);
-							if (!"jdbc".equalsIgnoreCase(conn.getScheme())) {
+							final File	f = new File(value);
+							
+							if (!f.exists() || !f.isFile() || !f.canRead()) {
 								SwingUtils.getNearestLogger(input).message(Severity.warning, "driver name [] not exists!");
 								return false;
 							}
 							else {
-								return true;
+								try(final URLClassLoader	loader = new URLClassLoader(new URL[] {f.toURI().toURL()})) {
+									
+									for(Driver item : ServiceLoader.load(java.sql.Driver.class, loader)) {
+										return true;
+									}
+									SwingUtils.getNearestLogger(input).message(Severity.warning, "driver name [] not exists!");
+									return false;
+								} catch (IOException e) {
+									SwingUtils.getNearestLogger(input).message(Severity.warning, "driver name [] not exists!");
+									return false;
+								}
 							}
-						} catch (IllegalArgumentException exc) {
-							SwingUtils.getNearestLogger(input).message(Severity.warning, "driver name [] not exists!");
+						}
+					case NAME_JDBC_SETTINGS_SCREEN_FIELD_CONN_STRING	:
+						value = ((JTextComponent)input).getText().trim();
+						
+						if (Utils.checkEmptyOrNullString(value)) {
+							SwingUtils.getNearestLogger(input).message(Severity.warning, "empty driver name!");
 							return false;
 						}
-					}
-				case NAME_JDBC_SETTINGS_SCREEN_FIELD_USER			:
-					value = ((JTextComponent)input).getText().trim();
-					
-					if (Utils.checkEmptyOrNullString(value)) {
-						SwingUtils.getNearestLogger(input).message(Severity.warning, "empty driver name!");
-						return false;
-					}
-					else {
-						return true;
-					}
-				case NAME_JDBC_SETTINGS_SCREEN_FIELD_PASSWORD		:
-					final char[]	passwd = ((JPasswordField)input).getPassword();
-					
-					if (passwd.length == 0) {
-						SwingUtils.getNearestLogger(input).message(Severity.warning, "empty driver name!");
-						return false;
-					}
-					else {
-						return true;
-					}
-				default :
-					throw new UnsupportedOperationException("Option ["+currentOption+"] is not supported yet");
+						else {
+							try{final URI	conn = URI.create(value);
+								if (!"jdbc".equalsIgnoreCase(conn.getScheme())) {
+									SwingUtils.getNearestLogger(input).message(Severity.warning, "driver name [] not exists!");
+									return false;
+								}
+								else {
+									return true;
+								}
+							} catch (IllegalArgumentException exc) {
+								SwingUtils.getNearestLogger(input).message(Severity.warning, "driver name [] not exists!");
+								return false;
+							}
+						}
+					case NAME_JDBC_SETTINGS_SCREEN_FIELD_USER			:
+						value = ((JTextComponent)input).getText().trim();
+						
+						if (Utils.checkEmptyOrNullString(value)) {
+							SwingUtils.getNearestLogger(input).message(Severity.warning, "empty driver name!");
+							return false;
+						}
+						else {
+							return true;
+						}
+					case NAME_JDBC_SETTINGS_SCREEN_FIELD_PASSWORD		:
+						final char[]	passwd = ((JPasswordField)input).getPassword();
+						
+						if (passwd.length == 0) {
+							SwingUtils.getNearestLogger(input).message(Severity.warning, "empty driver name!");
+							return false;
+						}
+						else {
+							return true;
+						}
+					default :
+						throw new UnsupportedOperationException("Option ["+currentOption+"] is not supported yet");
+				}
+			} finally {
+				sendRefresh(this);
+			}
+		}
+
+		public static class Options {
+			public final File 				driver;
+			public final URI 				connString;
+			public final String				user;
+			public final transient char[]	password;
+
+			public Options(File driver, URI connString, String user, char[] password) {
+				this.driver = driver;
+				this.connString = connString;
+				this.user = user;
+				this.password = password;
+			}
+
+			@Override
+			public String toString() {
+				return "Options [driver=" + driver + ", connString=" + connString + ", user=" + user + "]";
 			}
 		}
 	}	

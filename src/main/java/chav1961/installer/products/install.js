@@ -16,7 +16,8 @@ function install() {
 			"helloworld.jdbc.settings", 
 			screen, 
 			false, 
-			function(c){return screen.check();}).name()
+			function(c){return screen.checkOptions();},
+			function(c){return screen.isNextActionAvailable();}).name()
 		) {
 			case 'PREVIOUS':
 				WIZARD.popContent('_sp_');		
@@ -48,7 +49,7 @@ function install() {
 			"helloworld.install.complete", 
 			screen, 
 			true, 
-			function(c){return true;}).name()
+			function(c){return screen.checkOptions();}).name()
 		) {
 			case 'PREVIOUS':
 				WIZARD.popContent('_sp_');		

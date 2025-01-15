@@ -1,6 +1,7 @@
 package chav1961.installer.interfaces;
 
 public enum WizardAction {
+	REFRESH,
 	PREVIOUS,
 	NEXT,
 	COMPLETE,

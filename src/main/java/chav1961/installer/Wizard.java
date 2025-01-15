@@ -202,8 +202,12 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 			oldComponent = content;
 		}
 	}
-	
+
 	public WizardAction pushContent(final String stepId, final Localizer localizer, final String stepName, final String stepTitle, final JComponent component, final boolean isTerminalNode, final Predicate<JComponent> validator) {
+		return pushContent(stepId, localizer, stepName, stepTitle, component, isTerminalNode, validator, (c)->true);
+	}	
+	
+	public WizardAction pushContent(final String stepId, final Localizer localizer, final String stepName, final String stepTitle, final JComponent component, final boolean isTerminalNode, final Predicate<JComponent> validator, final Predicate<JComponent> nextAccessibility) {
 		if (Utils.checkEmptyOrNullString(stepId)) {
 			throw new IllegalArgumentException("Step ID can't be null or empty");
 		}
@@ -225,12 +229,16 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 			setStepCaption(stepTitle);
 			prevButton.setEnabled(steps.getModel().getSize() > 1);
 			nextButton.setText(getLocalizer().getValue(isTerminalNode ? APP_BUTTON_FINISH : APP_BUTTON_NEXT));
+			nextButton.setEnabled(nextAccessibility.test(component));
 			
 			try {
 				WizardAction	action;
 				
 				for(;;) {
 					switch (action = ex.exchange(null)) {
+						case REFRESH	:
+							nextButton.setEnabled(nextAccessibility.test(component));
+							break;
 						case CANCEL		:
 							final ExitOptions	options;
 							
@@ -303,6 +311,10 @@ public class Wizard extends JDialog implements LocaleChangeListener, LocalizerOw
 		dispose();
 	}
 
+	public void refresh() {
+		press(WizardAction.REFRESH);
+	}
+	
 	private void setStepCaption(final String caption) {
 		this.caption = caption;
 		try{
