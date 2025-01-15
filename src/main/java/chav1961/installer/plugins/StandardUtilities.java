@@ -4,7 +4,13 @@ package chav1961.installer.plugins;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Reader;
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -14,10 +20,15 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.ServiceLoader;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
@@ -32,6 +43,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.SpringLayout;
 import javax.swing.text.JTextComponent;
 
 import org.openjdk.nashorn.api.scripting.ScriptObjectMirror;
@@ -85,7 +97,7 @@ public class StandardUtilities {
 	private static final String		STD_JDBC_SETTINGS_SCREEN_BUTTON_TEST = "std.jdbc.settings.screen.button.test";
 	
 	private static final StandardUtilities	instance = new StandardUtilities();
-	
+
 	public ExitOptions confirmExit() {
 		final Wizard	w = (Wizard)Application.INSTALLATION_CONTEXT.get(Application.CTX_WIZARD);
 		final JPanel	panel = new JPanel(new BorderLayout(5, 5));
@@ -102,6 +114,95 @@ public class StandardUtilities {
 		}
 	}
 
+	public void saveOptions(final String fileName, final Object... options) throws IOException {
+		if (Utils.checkEmptyOrNullString(fileName)) {
+			throw new IllegalArgumentException("File name to save can't be null or empty string");
+		}
+		else if (options == null ||  Utils.checkArrayContent4Nulls(options) >= 0) {
+			throw new IllegalArgumentException("Options is null or contains nulls inside");
+		}
+		else {
+			final Properties	props = new Properties();
+			
+			for(Object option : options) {
+				if (option instanceof ScriptObjectMirror) {
+					for (Entry<String, Object> item : ((ScriptObjectMirror)option).entrySet()) {
+						props.setProperty(item.getKey(), item.getValue().toString());
+					}
+				}
+				else if (option instanceof Map) {
+					for (Entry<String, Object> item : ((Map<String, Object>)option).entrySet()) {
+						props.setProperty(item.getKey(), item.getValue().toString());
+					}
+				}
+				else {
+					for(Field f : option.getClass().getFields()) {
+						try {
+							props.setProperty(f.getName(), toString(f.get(option)));
+						} catch (IllegalAccessException e) {
+							throw new IllegalArgumentException(e);
+						} 
+					}
+				}
+			}
+			try(final FileOutputStream	fos = new FileOutputStream(fileName)) {
+				props.store(fos, "");
+			}
+		}
+	}	
+	
+	public Properties loadOptions(final String fileName, final boolean fileMustExist) throws IOException {
+		if (Utils.checkEmptyOrNullString(fileName)) {
+			throw new IllegalArgumentException("File name to save can't be null or empty string");
+		}
+		else {
+			final Properties	props = new Properties();
+			final File			f = new File(fileName);
+			
+			if (fileMustExist || !fileMustExist && f.exists() && f.isFile() && f.canRead()) {
+				try(final FileInputStream	fis = new FileInputStream(f)) {
+					props.load(fis);
+				}
+			}
+			return props;
+		}
+	}
+	
+	public void extractOptions(final Properties props, final ScriptObjectMirror source) {
+		if (props == null) {
+			throw new NullPointerException("Properties can't be null");
+		}
+		else if (source == null) {
+			throw new NullPointerException("Source mirror can't be null");
+		}
+		else {
+			final Map<String, Object>	temp = new HashMap<>();
+			
+			for (Entry<String, Object> item : source.entrySet()) {
+				if (props.containsKey(item.getKey())) {
+					final String	value = props.getProperty(item.getKey());
+					final Object	oldValue = item.getValue();
+					
+					if (oldValue instanceof Boolean) {
+						temp.put(item.getKey(), Boolean.valueOf(value));
+					}
+					else if ((oldValue instanceof Float) || (oldValue instanceof Double)) {
+						temp.put(item.getKey(), Double.valueOf(value));
+					}
+					else if (oldValue instanceof Number) {
+						temp.put(item.getKey(), Long.valueOf(value));
+					}
+					else {
+						temp.put(item.getKey(), value);
+					}
+				}
+			}
+			for (Entry<String, Object> item : temp.entrySet()) {
+				source.setMember(item.getKey(), item.getValue());
+			}
+		}
+	}
+	
 	/*
 	 * {"needReboot":true/false,"runApplication":true/false,"showReadMe":true/false}
 	 */
@@ -177,6 +278,29 @@ public class StandardUtilities {
 		return null;
 	}
 
+	private static String toString(final Object value) {
+		if (value == null) {
+			return "";
+		}
+		else {
+			final Class<?>	cl = value.getClass();
+			
+			if (cl.isArray()) {
+				final StringBuilder sb = new StringBuilder();
+				char prefix = '{';
+				
+				for(int index = 0, maxIndex = Array.getLength(value); index < maxIndex; index++) {
+					sb.append(prefix).append(toString(Array.get(value, index)));
+					prefix = ',';
+				}
+				return sb.append('}').toString();
+			}
+			else {
+				return value.toString();
+			}
+		}
+	}
+	
 	private static void extractValue2CheckBox(final ScriptObjectMirror parm, final String key, final String title, final List<ContentKeeper<?>> options) {
 		if (parm.hasMember(key)) {
 			options.add(new ContentKeeper<JCheckBox>(
@@ -293,8 +417,8 @@ public class StandardUtilities {
 
 	public static class JdbcSettingsContent extends JPanel implements LocaleChangeListener, OptionsKeeper<JdbcSettingsContent.Options> {
 		private static final long serialVersionUID = -5453784299596229643L;
-		private static final Icon				SUCCESS_ICON = new ImageIcon(JdbcSettingsContent.class.getResource(""));
-		private static final Icon				FAILED_ICON = new ImageIcon(JdbcSettingsContent.class.getResource(""));
+		private static final Icon				SUCCESS_ICON = new ImageIcon(JdbcSettingsContent.class.getResource("okIcon.png"));
+		private static final Icon				FAILED_ICON = new ImageIcon(JdbcSettingsContent.class.getResource("failedIcon.png"));
 
 		private final Localizer					localizer;
 		private final ContentKeeper<?>			preamble;
@@ -307,6 +431,8 @@ public class StandardUtilities {
 			this.localizer = localizer;
 			this.preamble = preamble;
 			this.options = options;
+			final SpringLayout	sl = new SpringLayout();
+			final JPanel	optListAndTest = new JPanel(sl);
 			final JPanel	optList = new JPanel(new LabelledLayout());
 			
 			add((JComponent)preamble.content, BorderLayout.NORTH);
@@ -324,8 +450,15 @@ public class StandardUtilities {
 				optList.add(component, LabelledLayout.CONTENT_AREA);
 				labels.add(label);
 			}
-			add(optList, BorderLayout.CENTER);
-			add(test, BorderLayout.SOUTH);
+			optListAndTest.add(optList);
+			optListAndTest.add(test);
+			sl.putConstraint(SpringLayout.NORTH, optList, 0, SpringLayout.NORTH, optListAndTest);
+			sl.putConstraint(SpringLayout.WEST, optList, 0, SpringLayout.WEST, optListAndTest);
+			sl.putConstraint(SpringLayout.EAST, optList, 0, SpringLayout.EAST, optListAndTest);
+			sl.putConstraint(SpringLayout.NORTH, test, 5, SpringLayout.SOUTH, optList);
+			sl.putConstraint(SpringLayout.EAST, test, 0, SpringLayout.EAST, optListAndTest);
+			
+			add(optListAndTest, BorderLayout.CENTER);
 			test.addActionListener((e)->test.setIcon(testConnection() ? SUCCESS_ICON : FAILED_ICON));
 			fillLocalizedStrings();
 		}
@@ -363,6 +496,30 @@ public class StandardUtilities {
 			fillLocalizedStrings();
 		}
 
+		public boolean check() {
+			return testConnection();
+		}
+
+		public boolean testConnection() {
+			final Options	opts = getOptions();
+			
+			try(final URLClassLoader	loader = new URLClassLoader(new URL[] {opts.driver.toURI().toURL()})) {
+				for(Driver item : ServiceLoader.load(java.sql.Driver.class, loader)) {
+					try(final Connection	conn = item.connect(opts.connString.toString(), Utils.mkProps("user", opts.user, "password", new String(opts.password)))) {
+						return true;
+					} catch (SQLException exc) {
+						SwingUtils.getNearestLogger(this).message(Severity.warning, exc.getLocalizedMessage());
+						return false;
+					}
+				}
+				SwingUtils.getNearestLogger(this).message(Severity.warning, "File ["+opts.driver.toURI()+"] not found or is not a driver jar");
+				return false;
+			} catch (IOException exc) {
+				SwingUtils.getNearestLogger(this).message(Severity.warning, "File ["+opts.driver.toURI()+"] not found or is not a driver jar");
+				return false;
+			}
+		}
+		
 		public static class Options {
 			public final File 	driver;
 			public final URI 	connString;
@@ -389,7 +546,7 @@ public class StandardUtilities {
 			for(int index = 0; index < parms.length; index++) {
 				parms[index] = values[index].get();
 			}
-			((JEditorPane)preamble.content).setText(String.format(InternalUtils.loadHtml(localizer, preamble.attributes.get(KEY_TEXT).toString()), parms));
+			((JEditorPane)preamble.content).setText(InternalUtils.loadHtml(localizer, preamble.attributes.get(KEY_TEXT).toString()));
 			for (int index = 0; index < options.size(); index++) {
 				labels.get(index).setText(localizer.getValue(options.get(index).attributes.get(KEY_TEXT).toString()));
 			}
@@ -473,37 +630,21 @@ public class StandardUtilities {
 					throw new UnsupportedOperationException("Option ["+currentOption+"] is not supported yet");
 			}
 		}
-		
-		private boolean testConnection() {
-			final Options	opts = getOptions();
-			
-			try(final URLClassLoader	loader = new URLClassLoader(new URL[] {opts.driver.toURI().toURL()})) {
-				for(Driver item : ServiceLoader.load(java.sql.Driver.class, loader)) {
-					try(final Connection	conn = item.connect(opts.connString.toString(), Utils.mkProps("user", opts.user, "password", new String(opts.password)))) {
-						return true;
-					} catch (SQLException exc) {
-						SwingUtils.getNearestLogger(this).message(Severity.warning, "empty driver name!");
-						return false;
-					}
-				}
-				SwingUtils.getNearestLogger(this).message(Severity.warning, "empty driver name!");
-				return false;
-			} catch (IOException exc) {
-				SwingUtils.getNearestLogger(this).message(Severity.warning, "empty driver name!");
-				return false;
-			}
-		}
 	}	
 
 	
 	private static class ParameterSubstitutor implements SubstitutionSource {
+		private final Object[]	parameters;
+		
+		private ParameterSubstitutor(final Object... parameters) {
+			this.parameters = parameters;
+		}
 
 		@Override
-		public String getValue(String key) {
+		public String getValue(final String key) {
 			// TODO Auto-generated method stub
 			return null;
 		}
-		
 	}
 	
 	
