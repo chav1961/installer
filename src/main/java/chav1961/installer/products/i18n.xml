@@ -7,6 +7,7 @@
 		<key name="helloworld.product.vendor">vendor</key>
 		
 		<key name="helloworld.jdbc.settings">JDBC settings</key>
+		<key name="helloworld.select.target">Select directory to install</key>
 		<key name="helloworld.install.complete">Install completed</key>
 	</lang> 
 	<lang name="ru">
@@ -16,6 +17,7 @@
 		<key name="helloworld.product.vendor">производитель</key>
 		
 		<key name="helloworld.jdbc.settings">Настройки JDBC</key>
+		<key name="helloworld.select.target">Выберите папку для установки</key>
 		<key name="helloworld.install.complete">Установка завершена</key>
 	</lang> 
 </localization>

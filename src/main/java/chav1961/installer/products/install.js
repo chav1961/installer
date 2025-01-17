@@ -44,9 +44,9 @@ function install() {
 			"helloworld.last", 
 			SERVICE.getLocalizer(), 
 			SERVICE.getProductName(), 
-			"helloworld.install.complete", 
+			"helloworld.select.target", 
 			screen, 
-			true, 
+			false, 
 			function(c){return screen.checkOptions();},
 			function(c){return screen.isNextActionAvailable();}).name()
 		) {

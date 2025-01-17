@@ -604,6 +604,8 @@ public class StandardUtilities {
 			try(final URLClassLoader	loader = new URLClassLoader(new URL[] {opts.driver.toURI().toURL()})) {
 				for(Driver item : ServiceLoader.load(java.sql.Driver.class, loader)) {
 					try(final Connection	conn = item.connect(opts.connString.toString(), Utils.mkProps("user", opts.user, "password", new String(opts.password)))) {
+
+						SwingUtils.getNearestLogger(this).message(Severity.info, "Test completed");
 						return true;
 					} catch (SQLException exc) {
 						SwingUtils.getNearestLogger(this).message(Severity.warning, exc.getLocalizedMessage());
@@ -753,7 +755,7 @@ public class StandardUtilities {
 			final JPanel	totalPage = new JPanel(sl);
 			final JPanel	optList = new JPanel(new LabelledLayout());
 			final JPanel	sizeList = new JPanel();
-			final BoxLayout	bl = new BoxLayout(sizeList, BoxLayout.PAGE_AXIS);
+			final BoxLayout	bl = new BoxLayout(sizeList, BoxLayout.Y_AXIS);
 			
 			add((JComponent)preamble.content, BorderLayout.NORTH);
 			for(ContentKeeper<?> item : options) {
