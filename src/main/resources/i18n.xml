@@ -25,6 +25,15 @@
 		<key name="std.jdbc.settings.screen.field.password">Password</key>
 		<key name="std.jdbc.settings.screen.button.test">Test connection</key>
 
+		<key name="std.select.target.directory.screen.preamble">Select directory to install</key>
+		<key name="std.select.target.directory.screen.field.target.dir">Directory to install:</key>
+		<key name="std.select.target.directory.screen.field.free.memory.required">Memory required, bytes:</key>
+		<key name="std.select.target.directory.screen.field.must.be.empty">Directory must be empty</key>
+		<key name="std.select.target.directory.screen.field.will.be.cleaned">Directory will be cleaned before installation</key>
+		<key name="std.select.target.directory.screen.field.available.roots">Media available:</key>
+		<key name="std.select.target.directory.screen.field.size.column.root">Location</key>
+		<key name="std.select.target.directory.screen.field.size.column.size">Free memory, bytes</key>		
+
 		<key name="std.last.screen.preamble">uri(lastscreen.cre)</key>
 		<key name="std.last.screen.field.need.reboot">Reboot system now</key>
 		<key name="std.last.screen.field.run.application">Run applcation</key>
@@ -81,6 +90,15 @@
 		<key name="std.jdbc.settings.screen.field.user">Пользователь</key>
 		<key name="std.jdbc.settings.screen.field.password">Пароль</key>
 		<key name="std.jdbc.settings.screen.button.test">Тест соединения</key>
+				
+		<key name="std.select.target.directory.screen.preamble">Выбрать паптку для установки</key>
+		<key name="std.select.target.directory.screen.field.target.dir">Папка для установки:</key>
+		<key name="std.select.target.directory.screen.field.free.memory.required">Требуется памяти, байт:</key>
+		<key name="std.select.target.directory.screen.field.must.be.empty">Папка должна быть пустой</key>
+		<key name="std.select.target.directory.screen.field.will.be.cleaned">Папка будет очищена перед установкой</key>
+		<key name="std.select.target.directory.screen.field.available.roots">Доступны носители:</key>
+		<key name="std.select.target.directory.screen.field.size.column.root">Адрес</key>
+		<key name="std.select.target.directory.screen.field.size.column.size">Свободное место, байт</key>		
 		
 		<key name="std.last.screen.preamble">uri(lastscreen.cre)</key>
 		<key name="std.last.screen.field.need.reboot">Перезагрузить систему</key>
