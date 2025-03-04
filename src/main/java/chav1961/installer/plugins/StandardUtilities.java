@@ -71,13 +71,18 @@ import chav1961.installer.internal.InternalUtils;
 import chav1961.installer.plugins.StandardUtilities.LastScreenContent.Options;
 import chav1961.purelib.basic.CharUtils.SubstitutionSource;
 import chav1961.purelib.basic.NamedValue;
+import chav1961.purelib.basic.PureLibSettings;
 import chav1961.purelib.basic.Utils;
 import chav1961.purelib.basic.exceptions.LocalizationException;
 import chav1961.purelib.basic.interfaces.LoggerFacade.Severity;
+import chav1961.purelib.i18n.PureLibLocalizer;
 import chav1961.purelib.i18n.interfaces.Localizer;
 import chav1961.purelib.i18n.interfaces.Localizer.LocaleChangeListener;
 import chav1961.purelib.model.FieldFormat;
+import chav1961.purelib.model.interfaces.ContentMetadataInterface.ContentNodeMetadata;
+import chav1961.purelib.ui.swing.JFileFieldWithMeta;
 import chav1961.purelib.ui.swing.SwingUtils;
+import chav1961.purelib.ui.swing.interfaces.JComponentMonitor;
 import chav1961.purelib.ui.swing.useful.JLocalizedOptionPane;
 import chav1961.purelib.ui.swing.useful.LabelledLayout;
 
@@ -329,15 +334,16 @@ public class StandardUtilities {
 	 */
 	public JComponent getSelectTargetDirScreen(final ScriptObjectMirror parm) {
 		final Wizard					w = (Wizard)Application.INSTALLATION_CONTEXT.get(Application.CTX_WIZARD);
+		final Localizer					l = w.getLocalizer();
 		final InstallationService		service = (InstallationService)Application.INSTALLATION_CONTEXT.get(Application.CTX_SERVICE);
 		final List<ContentKeeper<?>>	options = new ArrayList<>();
 
-		extractValue2TextField(parm, NAME_SELECT_TARGET_DIR_SCREEN_FIELD_TARGET_DIR, STD_SELECT_TARGET_DIR_SCREEN_FIELD_TARGET_DIR, options);
+		extractValue2FileField(parm, Localizer.toURI(l), NAME_SELECT_TARGET_DIR_SCREEN_FIELD_TARGET_DIR, STD_SELECT_TARGET_DIR_SCREEN_FIELD_TARGET_DIR, options);
 		extractValue2TextField(parm, NAME_SELECT_TARGET_DIR_SCREEN_FIELD_FREE_MEMORY_REQUIRED, STD_SELECT_TARGET_DIR_SCREEN_FIELD_FREE_MEMORY_REQUIRED, options);
 		extractValue2CheckBox(parm, NAME_SELECT_TARGET_DIR_SCREEN_FIELD_DIR_MUST_BE_EMPTY, STD_SELECT_TARGET_DIR_SCREEN_FIELD_MUST_BE_EMPTY, options);
 		extractValue2CheckBox(parm, NAME_SELECT_TARGET_DIR_SCREEN_FIELD_DIR_WILL_BE_CLEANED, STD_SELECT_TARGET_DIR_SCREEN_FIELD_WILL_BE_CLEANED, options);
 
-		return new SelectTargetDirContent(w.getLocalizer(),
+		return new SelectTargetDirContent(l,
 				new ContentKeeper<JEditorPane>(
 					"text",
 					InternalUtils.createEditorPane(),
@@ -407,6 +413,28 @@ public class StandardUtilities {
 			options.add(new ContentKeeper<JPasswordField>(
 					key,
 					new JPasswordField(parm.getMember(key).toString()), 
+					Utils.mkMap(new NamedValue<String>(KEY_TEXT, title))
+					)
+			);
+		}
+	}
+
+	private static void extractValue2FileField(final ScriptObjectMirror parm, final URI localizerURI, final String key, final String title, final List<ContentKeeper<?>> options) {
+		if (parm.hasMember(key)) {
+			final ContentNodeMetadata	md = ContentNodeMetadata.of("file", 
+														File.class, 
+														localizerURI, 
+														title, 
+														new FieldFormat(File.class, "30ms", "selectDir=true;forSave=true"), 
+														URI.create("ui:/current"), 
+														URI.create("action:/current")); 
+			final JComponentMonitor		mon = (event, metadata, component, parameters) -> true; 
+			final JFileFieldWithMeta	ff = new JFileFieldWithMeta(md, mon);
+			
+			ff.setText(parm.getMember(key).toString());
+			options.add(new ContentKeeper<JFileFieldWithMeta>(
+					key,
+					ff, 
 					Utils.mkMap(new NamedValue<String>(KEY_TEXT, title))
 					)
 			);

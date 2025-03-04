@@ -157,7 +157,8 @@ public class XMLBasedProduct implements InstallationService {
 	}
 	
 	private static class InternalLocalizer extends AbstractLocalizer {
-		private static final URI	INTERNAL_URI = URI.create(Localizer.LOCALIZER_SCHEME+":internal:/");
+		private static final String	SUBSCHEME = "internal";
+		private static final URI	INTERNAL_URI = URI.create(Localizer.LOCALIZER_SCHEME+':'+SUBSCHEME+":/");
 
 		private final Set<String>	keys = new HashSet<>();
 		private final EnumMap<SupportedLanguages, Map<String, String>>	dictionary = new EnumMap<>(SupportedLanguages.class);
@@ -262,6 +263,11 @@ public class XMLBasedProduct implements InstallationService {
 			return INTERNAL_URI;
 		}
 
+		@Override
+		public String getSubscheme() {
+			return SUBSCHEME;
+		}
+		
 		@Override
 		public boolean canServe(final URI resource) throws NullPointerException {
 			if (resource == null) {
