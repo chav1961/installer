@@ -57,7 +57,6 @@ import chav1961.purelib.basic.interfaces.LoggerFacade;
 import chav1961.purelib.basic.interfaces.LoggerFacade.Severity;
 import chav1961.purelib.basic.interfaces.LoggerFacadeOwner;
 import chav1961.purelib.model.FieldFormat;
-import chav1961.purelib.i18n.MutableJsonLocalizer;
 import chav1961.purelib.i18n.interfaces.Localizer;
 import chav1961.purelib.i18n.interfaces.Localizer.LocaleChangeListener;
 import chav1961.purelib.i18n.interfaces.LocalizerOwner;

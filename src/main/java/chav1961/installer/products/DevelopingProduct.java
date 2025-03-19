@@ -8,12 +8,12 @@ import javax.swing.Icon;
 import chav1961.installer.interfaces.InstallationService;
 import chav1961.purelib.basic.DottedVersion;
 import chav1961.purelib.basic.PureLibSettings.CurrentOS;
-import chav1961.purelib.i18n.MutableJsonLocalizer;
+import chav1961.purelib.i18n.interfaces.Localizer;
 
 public class DevelopingProduct implements InstallationService {
 	private final DottedVersion	version = new DottedVersion();
 	private final EnumMap<CurrentOS, String>	scripts = new EnumMap<>(CurrentOS.class);
-	private final MutableJsonLocalizer			localizer = new MutableJsonLocalizer();
+	private final Localizer			localizer;
 	private String				productName = "<new>";
 	private String				productDescription = "<new>";
 	private String				productVendor = "<new>";
@@ -22,11 +22,12 @@ public class DevelopingProduct implements InstallationService {
 	private Icon				productAvatar = null;
 
 	public DevelopingProduct() {
+		this.localizer = Localizer.Factory.newInstance(URI.create(Localizer.LOCALIZER_SCHEME+":mutablejson:/"));
 		
 	}
 	
 	@Override
-	public MutableJsonLocalizer getLocalizer() {
+	public Localizer getLocalizer() {
 		return localizer;
 	}
 

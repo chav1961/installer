@@ -75,7 +75,6 @@ import chav1961.purelib.basic.PureLibSettings;
 import chav1961.purelib.basic.Utils;
 import chav1961.purelib.basic.exceptions.LocalizationException;
 import chav1961.purelib.basic.interfaces.LoggerFacade.Severity;
-import chav1961.purelib.i18n.PureLibLocalizer;
 import chav1961.purelib.i18n.interfaces.Localizer;
 import chav1961.purelib.i18n.interfaces.Localizer.LocaleChangeListener;
 import chav1961.purelib.model.FieldFormat;

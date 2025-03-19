@@ -344,7 +344,7 @@ public class XMLBasedProduct implements InstallationService {
 		}
 
 		@Override
-		protected String getHelp(final String helpId, final Locale locale, final String encoding) throws LocalizationException, IllegalArgumentException {
+		public String getHelp(final String helpId, final Locale locale, final String encoding) throws LocalizationException, IllegalArgumentException {
 			final SupportedLanguages	lang = SupportedLanguages.of(locale);
 			
 			return advancedDictionary.get(lang).get(helpId);
